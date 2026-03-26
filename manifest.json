@@ -1,0 +1,10 @@
+{
+  "name": "แม่ปลา LINE Creator",
+  "short_name": "แม่ปลา",
+  "description": "สร้างโพสต์ LINE OA สำหรับผู้ปกครอง Hastin International",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF8F0",
+  "theme_color": "#F97316",
+  "icons": []
+}

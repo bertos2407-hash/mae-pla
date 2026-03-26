@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F97316">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="แม่ปลา">
+  <link rel="manifest" href="/manifest.json">
+  <title>แม่ปลา ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #FFF8F0;
+      color: #2C1810;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      background: linear-gradient(135deg, #F97316 0%, #FBBF24 100%);
+      padding: 28px 20px 26px;
+      text-align: center;
+      color: white;
+    }
+
+    .header-logo {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 10px;
+      filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18));
+    }
+
+    .app-header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 5px;
+    }
+
+    .app-header p {
+      font-size: 0.88rem;
+      opacity: 0.93;
+      font-weight: 400;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 22px 18px;
+      box-shadow: 0 2px 16px rgba(249, 115, 22, 0.08);
+      margin-bottom: 16px;
+    }
+
+    /* ── FORM FIELDS ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #92400E;
+      margin-bottom: 7px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .optional {
+      font-weight: 400;
+      color: #D1A87C;
+      font-size: 0.78rem;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    select,
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #F0D9C4;
+      border-radius: 12px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1rem;
+      color: #2C1810;
+      background: #FFFCF9;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23F97316' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #F97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+    }
+
+    textarea {
+      resize: none;
+      height: 82px;
+    }
+
+    /* ── GENERATE BUTTON ── */
+    #generate-btn {
+      width: 100%;
+      padding: 17px;
+      background: linear-gradient(135deg, #F97316 0%, #FBBF24 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+      margin-top: 6px;
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
+    }
+
+    #generate-btn:active {
+      transform: scale(0.98);
+    }
+
+    #generate-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── LOADING DOTS ── */
+    .loading-dots {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-dots span {
+      width: 7px;
+      height: 7px;
+      background: white;
+      border-radius: 50%;
+      animation: dot-bounce 1.2s infinite ease-in-out;
+    }
+
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dot-bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.8; }
+      30% { transform: translateY(-7px); opacity: 1; }
+    }
+
+    /* ── HINT ── */
+    .hint {
+      font-size: 0.78rem;
+      color: #C4A882;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* ── ERROR ── */
+    #error-msg {
+      display: none;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #DC2626;
+      font-size: 0.9rem;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    #error-msg.visible {
+      display: block;
+    }
+
+    /* ── OUTPUT SECTION ── */
+    #output-section {
+      display: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    #output-section.visible {
+      display: block;
+    }
+
+    #output-section.animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1.5px solid #F5E6D8;
+    }
+
+    .output-header h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #92400E;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    #copy-btn {
+      padding: 9px 18px;
+      background: #FFF7ED;
+      color: #F97316;
+      border: 1.5px solid #FDDCB5;
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 90px;
+    }
+
+    #copy-btn:active {
+      transform: scale(0.97);
+    }
+
+    #copy-btn.copied {
+      background: #ECFDF5;
+      color: #059669;
+      border-color: #A7F3D0;
+    }
+
+    #pdf-btn, #print-btn {
+      padding: 9px 14px;
+      background: #FFF7ED;
+      color: #F97316;
+      border: 1.5px solid #FDDCB5;
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #pdf-btn:active, #print-btn:active {
+      transform: scale(0.97);
+    }
+
+    #pdf-btn:disabled, #print-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .output-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    #output-text {
+      font-size: 0.97rem;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      color: #2C1810;
+      min-height: 40px;
+    }
+
+    /* ── PHOTO UPLOAD ── */
+    .photo-upload-empty {
+      border: 2px dashed #F0D9C4;
+      border-radius: 12px;
+      padding: 22px 16px;
+      text-align: center;
+      cursor: pointer;
+      background: #FFFCF9;
+      transition: border-color 0.2s, background 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+    }
+
+    .photo-upload-empty:active {
+      border-color: #F97316;
+      background: #FFF5E6;
+    }
+
+    .photo-icon {
+      font-size: 1.8rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .photo-upload-text {
+      font-size: 0.88rem;
+      color: #C4A882;
+    }
+
+    .photos-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .photo-thumb-wrapper {
+      position: relative;
+      width: 90px;
+      height: 90px;
+    }
+
+    .photo-thumb {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid #F97316;
+      display: block;
+    }
+
+    .photo-remove {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 24px;
+      height: 24px;
+      background: #F97316;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .add-photo-btn {
+      width: 100%;
+      padding: 11px;
+      border: 2px dashed #F0D9C4;
+      border-radius: 10px;
+      background: #FFFCF9;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.88rem;
+      color: #C4A882;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .add-photo-btn:active {
+      border-color: #F97316;
+    }
+
+    /* ── LANGUAGE TOGGLE ── */
+    .lang-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      flex: 1;
+      padding: 11px 6px;
+      border: 1.5px solid #F0D9C4;
+      border-radius: 10px;
+      background: #FFFCF9;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #92400E;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #F97316 0%, #FBBF24 100%);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 3px 10px rgba(249, 115, 22, 0.3);
+    }
+
+    .lang-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ── CURSOR BLINK (while streaming) ── */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #F97316;
+      margin-left: 1px;
+      vertical-align: text-bottom;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-logo">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- White background circle -->
+        <circle cx="50" cy="50" r="50" fill="white"/>
+        <!-- Fish tail -->
+        <polygon points="20,50 36,37 36,63" fill="#F97316"/>
+        <!-- Fish body -->
+        <ellipse cx="57" cy="50" rx="26" ry="17" fill="#F97316"/>
+        <!-- Belly highlight -->
+        <ellipse cx="56" cy="57" rx="18" ry="8" fill="#FBBF24"/>
+        <!-- Top fin -->
+        <path d="M44,34 Q54,24 66,32" fill="none" stroke="#FBBF24" stroke-width="4.5" stroke-linecap="round"/>
+        <!-- Eye white -->
+        <circle cx="72" cy="45" r="6" fill="white"/>
+        <!-- Pupil -->
+        <circle cx="73" cy="45" r="3.5" fill="#2C1810"/>
+        <!-- Eye shine -->
+        <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
+        <!-- Mouth -->
+        <path d="M79,53 Q82,57 79,61" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1 id="app-name">แม่ปลา</h1>
+    <p id="header-sub">Homework Posts for Parents · สร้างโพสต์ LINE OA</p>
+  </header>
+
+  <main class="content">
+
+    <!-- INPUT CARD -->
+    <div class="card">
+
+      <div class="field">
+        <label id="label-curriculum">Curriculum / หลักสูตร</label>
+        <div class="lang-toggle">
+          <button class="curriculum-btn lang-btn active" onclick="setCurriculum('oxford', this)">📘 Oxford</button>
+          <button class="curriculum-btn lang-btn" onclick="setCurriculum('cambridge', this)">📗 Cambridge</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="label-lang">Post Language / ภาษาของโพสต์</label>
+        <div class="lang-toggle">
+          <button class="lang-btn active" onclick="setLang('thai', this)">🇹🇭 Thai</button>
+          <button class="lang-btn" onclick="setLang('english', this)">🇬🇧 English</button>
+          <button class="lang-btn" onclick="setLang('both', this)">🌏 Both</button>
+          <button class="lang-btn" onclick="setLang('enthai', this)">🇬🇧→🇹🇭</button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label id="label-subject" for="subject">วิชา</label>
+          <select id="subject">
+            <option value="คณิตศาสตร์" data-th="คณิตศาสตร์" data-en="Mathematics">คณิตศาสตร์</option>
+            <option value="วิทยาศาสตร์" data-th="วิทยาศาสตร์" data-en="Science">วิทยาศาสตร์</option>
+            <option value="ภาษาอังกฤษ" data-th="ภาษาอังกฤษ" data-en="English">ภาษาอังกฤษ</option>
+          </select>
+        </div>
+        <div class="field">
+          <label id="label-year" for="year">ชั้นปี</label>
+          <select id="year">
+            <option value="ป.1" data-th="ป.1" data-en="Year 1">ป.1</option>
+            <option value="ป.2" data-th="ป.2" data-en="Year 2">ป.2</option>
+            <option value="ป.3" data-th="ป.3" data-en="Year 3">ป.3</option>
+            <option value="ป.4" data-th="ป.4" data-en="Year 4">ป.4</option>
+            <option value="ป.5" data-th="ป.5" data-en="Year 5">ป.5</option>
+            <option value="ป.6" data-th="ป.6" data-en="Year 6">ป.6</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="label-topic" for="topic">หัวข้อการบ้าน</label>
+        <input
+          type="text"
+          id="topic"
+          placeholder="เช่น การบวกเลขสองหลัก หรือ fractions"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <div class="field">
+        <label id="label-context" for="context">
+          ข้อมูลเพิ่มเติม <span id="label-optional" class="optional">(ไม่จำเป็น)</span>
+        </label>
+        <textarea
+          id="context"
+          placeholder="เช่น หน้า 12 ของใบงาน หรือรายละเอียดพิเศษ"
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label id="label-photo">📷 Worksheet Photo <span class="optional" id="label-photo-opt">(optional but recommended)</span></label>
+
+        <!-- Empty state -->
+        <div class="photo-upload-empty" id="photo-empty" onclick="document.getElementById('photo-input').click()">
+          <span class="photo-icon">📷</span>
+          <span class="photo-upload-text" id="photo-upload-text">Tap to photograph the worksheet</span>
+        </div>
+
+        <!-- Photos added state -->
+        <div id="photos-container" style="display:none">
+          <div class="photos-row" id="photos-row"></div>
+          <button class="add-photo-btn" id="add-photo-btn" onclick="document.getElementById('photo-input').click()">
+            📷 <span id="add-photo-text">Add another photo (up to 3)</span>
+          </button>
+        </div>
+
+        <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+      </div>
+
+      <button id="generate-btn" onclick="generate()">
+        สร้างเนื้อหา ✦
+      </button>
+      <p class="hint" id="hint-time">ใช้เวลาประมาณ 10–15 วินาที</p>
+
+      <div id="error-msg"></div>
+
+    </div>
+
+    <!-- OUTPUT CARD -->
+    <div id="output-section" class="card">
+      <div class="output-header">
+        <h3 id="output-header-title">📋 โพสต์ LINE OA</h3>
+        <div class="output-actions">
+          <button id="pdf-btn" onclick="downloadPdf()">📄 PDF</button>
+          <button id="copy-btn" onclick="copyContent()">คัดลอก ✓</button>
+        </div>
+      </div>
+      <div id="output-text"></div>
+    </div>
+
+  </main>
+
+  <!-- PDF Template (hidden, captured by html2canvas) -->
+  <div id="pdf-template" style="position:fixed;left:-9999px;top:0;width:640px;background:#FFFBF7;font-family:'Sarabun',sans-serif;display:none;">
+
+    <!-- Top accent bar -->
+    <div style="height:5px;background:linear-gradient(90deg,#EA580C,#F97316,#FBBF24,#F97316,#EA580C);"></div>
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#C2410C 0%,#F97316 45%,#FBBF24 100%);padding:24px 36px 20px;color:white;position:relative;overflow:hidden;page-break-inside:avoid;">
+      <div style="position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);"></div>
+      <div style="position:absolute;right:50px;bottom:-50px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+
+      <!-- Logo + name -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;position:relative;">
+        <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <circle cx="50" cy="50" r="50" fill="rgba(255,255,255,0.22)"/>
+          <polygon points="20,50 36,37 36,63" fill="white"/>
+          <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+          <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.6)"/>
+          <path d="M44,34 Q54,24 66,32" fill="none" stroke="rgba(251,191,36,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="72" cy="45" r="6" fill="rgba(234,88,12,0.3)"/>
+          <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
+          <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
+          <path d="M79,53 Q82,57 79,61" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div style="font-size:1.85rem;font-weight:800;line-height:1.05;" id="pdf-app-name">แม่ปลา</div>
+          <div style="font-size:0.85rem;opacity:0.85;margin-top:3px;">Homework Helper for Parents · LINE OA</div>
+        </div>
+      </div>
+
+      <!-- Topic card -->
+      <div style="background:rgba(255,255,255,0.17);border:1px solid rgba(255,255,255,0.3);border-radius:12px;padding:13px 18px;position:relative;">
+        <div style="font-size:0.65rem;font-weight:700;opacity:0.7;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;">📚 Homework Topic</div>
+        <div style="font-size:1.15rem;font-weight:700;line-height:1.3;" id="pdf-topic-text">—</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;" id="pdf-tags"></div>
+      </div>
+    </div>
+
+    <!-- Photos section -->
+    <div id="pdf-photos-section" style="padding:22px 36px 0;display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <div style="width:3px;height:16px;background:linear-gradient(#F97316,#FBBF24);border-radius:2px;flex-shrink:0;"></div>
+        <div style="font-size:0.68rem;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:0.08em;">📷 Worksheet Photos</div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;" id="pdf-photos-grid"></div>
+      <div style="height:1px;background:linear-gradient(90deg,#FDDCB5,transparent);margin-top:22px;"></div>
+    </div>
+
+    <!-- Content section -->
+    <div style="padding:22px 36px 26px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <div style="width:3px;height:16px;background:linear-gradient(#F97316,#FBBF24);border-radius:2px;flex-shrink:0;"></div>
+        <div style="font-size:0.68rem;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:0.08em;">📋 LINE OA Post</div>
+      </div>
+      <div style="background:white;border:1.5px solid #FDDCB5;border-radius:14px;padding:22px 20px;box-shadow:0 2px 14px rgba(249,115,22,0.06);">
+        <div style="font-size:0.9rem;line-height:1.85;white-space:pre-wrap;color:#2C1810;" id="pdf-content"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="margin:0 36px;height:1px;background:linear-gradient(90deg,#FDDCB5,transparent);"></div>
+    <div style="padding:13px 36px 20px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <svg viewBox="0 0 100 100" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="50" fill="#FFF0E0"/>
+          <polygon points="20,50 36,37 36,63" fill="#F97316"/>
+          <ellipse cx="57" cy="50" rx="26" ry="17" fill="#F97316"/>
+          <ellipse cx="56" cy="57" rx="18" ry="8" fill="#FBBF24"/>
+          <circle cx="72" cy="45" r="5" fill="white"/>
+          <circle cx="73" cy="45" r="3" fill="#2C1810"/>
+          <circle cx="74.5" cy="43.5" r="1.2" fill="white"/>
+        </svg>
+        <span style="font-size:0.75rem;color:#B45309;font-weight:600;">แม่ปลา · Mae Pla · Mother Fish</span>
+      </div>
+      <span style="font-size:0.72rem;color:#C4A882;" id="pdf-footer-date"></span>
+    </div>
+
+    <!-- Bottom accent bar -->
+    <div style="height:4px;background:linear-gradient(90deg,#EA580C,#F97316,#FBBF24,#F97316,#EA580C);"></div>
+
+  </div>
+
+  <script>
+    let generatedText = '';
+    let selectedLang = 'thai';
+    let selectedCurriculum = 'oxford';
+    let photos = [];
+    const MAX_PHOTOS = 3;
+
+    function setCurriculum(curriculum, btn) {
+      selectedCurriculum = curriculum;
+      document.querySelectorAll('.curriculum-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    async function handlePhoto(input) {
+      const file = input.files[0];
+      if (!file || photos.length >= MAX_PHOTOS) return;
+      input.value = '';
+      const compressed = await compressImage(file, 1024, 0.82);
+      photos.push({ base64: compressed.base64, type: compressed.type });
+      renderPhotos();
+    }
+
+    function removePhoto(index) {
+      photos.splice(index, 1);
+      renderPhotos();
+    }
+
+    function renderPhotos() {
+      const empty     = document.getElementById('photo-empty');
+      const container = document.getElementById('photos-container');
+      const row       = document.getElementById('photos-row');
+      const addBtn    = document.getElementById('add-photo-btn');
+
+      if (photos.length === 0) {
+        empty.style.display = 'flex';
+        container.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      container.style.display = 'block';
+
+      row.innerHTML = photos.map((p, i) => `
+        <div class="photo-thumb-wrapper">
+          <img src="data:${p.type};base64,${p.base64}" class="photo-thumb" alt="worksheet ${i + 1}">
+          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
+        </div>
+      `).join('');
+
+      addBtn.style.display = photos.length < MAX_PHOTOS ? 'block' : 'none';
+    }
+
+    function compressImage(file, maxDim, quality) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round(height * maxDim / width);
+                width = maxDim;
+              } else {
+                width = Math.round(width * maxDim / height);
+                height = maxDim;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve({ base64: dataUrl.split(',')[1], type: 'image/jpeg' });
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const ui = {
+      thai: {
+        appname:    'แม่ปลา',
+        subtitle:   'สร้างโพสต์ LINE OA สำหรับผู้ปกครอง',
+        curriculum: 'หลักสูตร',
+        lang:       'ภาษาของโพสต์',
+        subject:    'วิชา',
+        year:       'ชั้นปี',
+        topic:      'หัวข้อการบ้าน',
+        context:    'ข้อมูลเพิ่มเติม',
+        optional:   '(ไม่จำเป็น)',
+        topicPh:    'เช่น การบวกเลขสองหลัก หรือ fractions',
+        ctxPh:      'เช่น หน้า 12 ของใบงาน หรือรายละเอียดพิเศษ',
+        photo:      '📷 รูปใบงาน',
+        photoOpt:   '(ไม่จำเป็น แต่แนะนำ)',
+        photoTap:   'แตะเพื่อถ่ายรูปใบงาน',
+        addPhoto:   'เพิ่มรูปอีก (สูงสุด 3 รูป)',
+        btn:        'สร้างเนื้อหา ✦',
+        hint:       'ใช้เวลาประมาณ 10–15 วินาที',
+        output:     '📋 โพสต์ LINE OA',
+        copy:       'คัดลอก ✓',
+        copied:     'คัดลอกแล้ว ✓',
+      },
+      english: {
+        appname:    'Mae Pla · Mother Fish',
+        subtitle:   'Homework Posts for Parents',
+        curriculum: 'Curriculum',
+        lang:       'Post Language',
+        subject:    'Subject',
+        year:       'Year Group',
+        topic:      'Homework Topic',
+        context:    'Extra Details',
+        optional:   '(optional)',
+        topicPh:    'e.g. fractions, the water cycle, past tense',
+        ctxPh:      'e.g. worksheet page 12, or any special context',
+        photo:      '📷 Worksheet Photo',
+        photoOpt:   '(optional but recommended)',
+        photoTap:   'Tap to photograph the worksheet',
+        addPhoto:   'Add another photo (up to 3)',
+        btn:        'Create Content ✦',
+        hint:       'Takes about 10–15 seconds',
+        output:     '📋 LINE OA Post',
+        copy:       'Copy ✓',
+        copied:     'Copied ✓',
+      },
+      both: {
+        appname:    'แม่ปลา · Mae Pla',
+        subtitle:   'Homework Posts for Parents · สร้างโพสต์ LINE OA',
+        curriculum: 'Curriculum / หลักสูตร',
+        lang:       'Post Language / ภาษาของโพสต์',
+        subject:    'Subject / วิชา',
+        year:       'Year / ชั้นปี',
+        topic:      'Homework Topic / หัวข้อการบ้าน',
+        context:    'Extra Details / ข้อมูลเพิ่มเติม',
+        optional:   '(optional / ไม่จำเป็น)',
+        topicPh:    'e.g. fractions / การบวกเลขสองหลัก',
+        ctxPh:      'e.g. page 12 / หน้า 12 ของใบงาน',
+        photo:      '📷 Worksheet Photo / รูปใบงาน',
+        photoOpt:   '(optional / ไม่จำเป็น)',
+        photoTap:   'Tap to add worksheet photo / แตะเพื่อถ่ายรูป',
+        addPhoto:   'Add another / เพิ่มรูปอีก (up to 3)',
+        btn:        'Create Content ✦',
+        hint:       'Takes about 10–15 seconds',
+        output:     '📋 LINE OA Post (Bilingual / สองภาษา)',
+        copy:       'Copy ✓',
+        copied:     'Copied ✓',
+      },
+      enthai: {
+        appname:    'แม่ปลา',
+        subtitle:   'สร้างโพสต์ LINE OA สำหรับผู้ปกครอง',
+        curriculum: 'หลักสูตร',
+        lang:       'ภาษาของโพสต์',
+        subject:    'วิชา',
+        year:       'ชั้นปี',
+        topic:      'หัวข้อการบ้าน (ภาษาอังกฤษ)',
+        context:    'ข้อมูลเพิ่มเติม',
+        optional:   '(ไม่จำเป็น)',
+        topicPh:    'เช่น fractions, past tense, the water cycle',
+        ctxPh:      'เช่น หน้า 12 ของใบงาน หรือรายละเอียดพิเศษ',
+        photo:      '📷 รูปใบงาน',
+        photoOpt:   '(ไม่จำเป็น แต่แนะนำ)',
+        photoTap:   'แตะเพื่อถ่ายรูปใบงาน',
+        addPhoto:   'เพิ่มรูปอีก (สูงสุด 3 รูป)',
+        btn:        'สร้างเนื้อหา ✦',
+        hint:       'ใช้เวลาประมาณ 10–15 วินาที',
+        output:     '📋 โพสต์ LINE OA',
+        copy:       'คัดลอก ✓',
+        copied:     'คัดลอกแล้ว ✓',
+      },
+    };
+
+    function setLang(lang, btn) {
+      selectedLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const t = ui[lang];
+      document.getElementById('label-lang').textContent    = t.lang;
+      document.getElementById('label-subject').textContent = t.subject;
+      document.getElementById('label-year').textContent    = t.year;
+      document.getElementById('label-topic').textContent   = t.topic;
+      document.getElementById('label-context').firstChild.textContent = t.context + ' ';
+      document.getElementById('label-optional').textContent = t.optional;
+      document.getElementById('topic').placeholder         = t.topicPh;
+      document.getElementById('context').placeholder       = t.ctxPh;
+      document.getElementById('generate-btn').textContent  = t.btn;
+      document.getElementById('hint-time').textContent     = t.hint;
+      document.getElementById('copy-btn').textContent      = t.copy;
+
+      // Swap subject dropdown display text
+      const isEn = lang === 'english';
+      document.querySelectorAll('#subject option').forEach(opt => {
+        opt.textContent = isEn ? opt.dataset.en : opt.dataset.th;
+      });
+      document.querySelectorAll('#year option').forEach(opt => {
+        opt.textContent = isEn ? opt.dataset.en : opt.dataset.th;
+      });
+
+      // Update output header if visible
+      const outHeader = document.querySelector('.output-header h3');
+      if (outHeader) outHeader.textContent = t.output;
+
+      document.getElementById('app-name').textContent = t.appname;
+      document.getElementById('header-sub').textContent = t.subtitle;
+      document.getElementById('label-curriculum').textContent = t.curriculum;
+
+      // Update photo labels
+      document.getElementById('label-photo').firstChild.textContent = t.photo + ' ';
+      document.getElementById('label-photo-opt').textContent = t.photoOpt;
+      document.getElementById('photo-upload-text').textContent = t.photoTap;
+      document.getElementById('add-photo-text').textContent = t.addPhoto;
+    }
+
+    async function generate() {
+      const subject = document.getElementById('subject').value;
+      const year    = document.getElementById('year').value;
+      const topic   = document.getElementById('topic').value.trim();
+      const context = document.getElementById('context').value.trim();
+      const language = selectedLang;
+
+      // Validate topic
+      if (!topic) {
+        const topicEl = document.getElementById('topic');
+        topicEl.focus();
+        topicEl.style.borderColor = '#F97316';
+        topicEl.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.2)';
+        setTimeout(() => {
+          topicEl.style.borderColor = '';
+          topicEl.style.boxShadow = '';
+        }, 1800);
+        return;
+      }
+
+      const btn           = document.getElementById('generate-btn');
+      const outputSection = document.getElementById('output-section');
+      const outputText    = document.getElementById('output-text');
+      const errorMsg      = document.getElementById('error-msg');
+      const copyBtn       = document.getElementById('copy-btn');
+
+      // Reset UI
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+      errorMsg.classList.remove('visible');
+      errorMsg.textContent = '';
+      outputText.textContent = '';
+      generatedText = '';
+      copyBtn.textContent = 'คัดลอก ✓';
+      copyBtn.classList.remove('copied');
+
+      // Hide output while generating
+      outputSection.classList.remove('visible', 'animated');
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subject, year, topic, context, language, curriculum: selectedCurriculum, images: photos }),
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error || `เกิดข้อผิดพลาด (${response.status})`);
+        }
+
+        // Show output section with animation
+        outputSection.classList.add('visible');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => outputSection.classList.add('animated'));
+        });
+        outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Add blinking cursor
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        outputText.appendChild(cursor);
+
+        // Read SSE stream
+        const reader  = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const raw = line.slice(6);
+            if (raw === '[DONE]') break;
+
+            let parsed;
+            try { parsed = JSON.parse(raw); } catch { continue; }
+
+            if (parsed.error) throw new Error(parsed.error);
+
+            if (parsed.text) {
+              generatedText += parsed.text;
+              // Update text while keeping cursor at end
+              outputText.textContent = generatedText;
+              outputText.appendChild(cursor);
+            }
+          }
+        }
+
+        // Remove cursor when done
+        cursor.remove();
+
+      } catch (err) {
+        outputSection.classList.remove('visible', 'animated');
+        errorMsg.textContent = `เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้งนะคะ (${err.message})`;
+        errorMsg.classList.add('visible');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = ui[selectedLang].btn;
+      }
+    }
+
+    async function copyContent() {
+      if (!generatedText) return;
+
+      const copyBtn = document.getElementById('copy-btn');
+
+      try {
+        await navigator.clipboard.writeText(generatedText);
+      } catch {
+        // Fallback for older mobile browsers
+        const ta = document.createElement('textarea');
+        ta.value = generatedText;
+        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+
+      copyBtn.textContent = 'คัดลอกแล้ว ✓';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = 'คัดลอก ✓';
+        copyBtn.classList.remove('copied');
+      }, 2200);
+    }
+
+    function printContent() {
+      if (!generatedText) return;
+
+      const subjectEl  = document.getElementById('subject');
+      const yearEl     = document.getElementById('year');
+      const subject    = subjectEl.options[subjectEl.selectedIndex].text;
+      const year       = yearEl.options[yearEl.selectedIndex].text;
+      const topic      = document.getElementById('topic').value.trim();
+      const curricLabel = selectedCurriculum === 'oxford' ? '📘 Oxford' : '📗 Cambridge';
+      const appName    = ui[selectedLang].appname;
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      const photosHtml = photos.length > 0 ? `
+        <div class="section">
+          <div class="section-label">📷 Worksheet Photos</div>
+          <div class="photos-grid">
+            ${photos.map(p => `<img src="data:${p.type};base64,${p.base64}">`).join('')}
+          </div>
+        </div>` : '';
+
+      const win = window.open('', '_blank');
+      win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>แม่ปลา · ${topic}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sarabun', sans-serif; background: white; color: #2C1810; }
+
+    .header {
+      background: linear-gradient(135deg, #C2410C 0%, #F97316 45%, #FBBF24 100%);
+      padding: 28px 40px 24px;
+      color: white;
+    }
+    .header-top { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .header-top svg { flex-shrink: 0; }
+    .app-name { font-size: 1.8rem; font-weight: 800; line-height: 1.05; }
+    .app-sub  { font-size: 0.85rem; opacity: 0.85; margin-top: 3px; }
+    .topic-card {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.32);
+      border-radius: 12px;
+      padding: 13px 18px;
+    }
+    .topic-label { font-size: 0.62rem; font-weight: 700; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
+    .topic-title { font-size: 1.1rem; font-weight: 700; }
+    .tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+    .tag {
+      background: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 20px;
+      padding: 4px 13px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .body { padding: 28px 40px; }
+
+    .section { margin-bottom: 24px; }
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #92400E;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 16px;
+      background: linear-gradient(#F97316, #FBBF24);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .photos-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+    .photos-grid img {
+      border-radius: 10px;
+      border: 1.5px solid #FDDCB5;
+      max-height: 220px;
+      max-width: 100%;
+      object-fit: cover;
+    }
+
+    .content-card {
+      background: #FFFBF7;
+      border: 1.5px solid #FDDCB5;
+      border-radius: 14px;
+      padding: 24px 22px;
+    }
+    .content-text {
+      font-size: 0.97rem;
+      line-height: 1.95;
+      white-space: pre-wrap;
+      color: #2C1810;
+    }
+
+    .footer {
+      border-top: 1.5px solid #F5E6D8;
+      padding: 14px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-brand { font-size: 0.78rem; color: #B45309; font-weight: 600; }
+    .footer-date  { font-size: 0.74rem; color: #C4A882; }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-top">
+      <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="50" fill="rgba(255,255,255,0.22)"/>
+        <polygon points="20,50 36,37 36,63" fill="white"/>
+        <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+        <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.6)"/>
+        <path d="M44,34 Q54,24 66,32" fill="none" stroke="rgba(251,191,36,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="72" cy="45" r="6" fill="rgba(234,88,12,0.3)"/>
+        <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
+        <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
+        <path d="M79,53 Q82,57 79,61" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="app-name">${appName}</div>
+        <div class="app-sub">Homework Helper for Parents · LINE OA</div>
+      </div>
+    </div>
+    <div class="topic-card">
+      <div class="topic-label">📚 Homework Topic</div>
+      <div class="topic-title">${topic || subject}</div>
+      <div class="tags">
+        <span class="tag">${subject}</span>
+        <span class="tag">${year}</span>
+        <span class="tag">${curricLabel}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="body">
+    ${photosHtml}
+    <div class="section">
+      <div class="section-label">LINE OA Post</div>
+      <div class="content-card">
+        <div class="content-text">${generatedText.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-brand">แม่ปลา · Mae Pla · Mother Fish</span>
+    <span class="footer-date">${dateStr}</span>
+  </div>
+
+  <scr` + `ipt>
+    window.onload = function() {
+      setTimeout(function() { window.print(); }, 800);
+    };
+  </scr` + `ipt>
+</body>
+</html>`);
+      win.document.close();
+    }
+
+    async function downloadPdf() {
+      if (!generatedText) return;
+
+      const pdfBtn = document.getElementById('pdf-btn');
+      pdfBtn.textContent = '⏳';
+      pdfBtn.disabled = true;
+
+      const subjectEl = document.getElementById('subject');
+      const yearEl    = document.getElementById('year');
+      const subject   = subjectEl.options[subjectEl.selectedIndex].text;
+      const year      = yearEl.options[yearEl.selectedIndex].text;
+      const topic     = document.getElementById('topic').value.trim();
+      const curricLabel = selectedCurriculum === 'oxford' ? '📘 Oxford' : '📗 Cambridge';
+
+      // Populate content
+      document.getElementById('pdf-content').textContent  = generatedText;
+      document.getElementById('pdf-app-name').textContent = ui[selectedLang].appname;
+      document.getElementById('pdf-topic-text').textContent = topic || subject;
+
+      // Coloured tags
+      document.getElementById('pdf-tags').innerHTML = [
+        `<span style="background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.45);border-radius:20px;padding:5px 14px;font-size:0.82rem;font-weight:700;">${subject}</span>`,
+        `<span style="background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.45);border-radius:20px;padding:5px 14px;font-size:0.82rem;font-weight:700;">${year}</span>`,
+        `<span style="background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.45);border-radius:20px;padding:5px 14px;font-size:0.82rem;font-weight:700;">${curricLabel}</span>`,
+      ].join('');
+
+      // Date footer
+      const now = new Date();
+      document.getElementById('pdf-footer-date').textContent =
+        now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      // Photos — inject base64 images directly (no CORS needed)
+      const photosSection = document.getElementById('pdf-photos-section');
+      const photosGrid    = document.getElementById('pdf-photos-grid');
+      if (photos.length > 0) {
+        photosGrid.innerHTML = photos.map(p =>
+          `<div style="flex:1;min-width:150px;max-width:${photos.length === 1 ? '400px' : '175px'};border-radius:12px;overflow:hidden;border:2px solid #FDDCB5;box-shadow:0 3px 10px rgba(249,115,22,0.12);">
+            <img src="data:${p.type};base64,${p.base64}" style="width:100%;height:${photos.length === 1 ? '260px' : '160px'};object-fit:cover;display:block;">
+           </div>`
+        ).join('');
+        photosSection.style.display = 'block';
+      } else {
+        photosSection.style.display = 'none';
+      }
+
+      const template = document.getElementById('pdf-template');
+      template.style.display = 'block';
+
+      try {
+        await document.fonts.ready;
+
+        const canvas = await html2canvas(template, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          backgroundColor: '#FFFBF7'
+        });
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+        await new Promise((resolve) => {
+          pdf.html(template, {
+            callback: function(doc) { resolve(doc); },
+            margin: [0, 0, 0, 0],
+            autoPaging: 'text',
+            x: 0,
+            y: 0,
+            width: 210,
+            windowWidth: 640,
+            html2canvas: {
+              scale: 2,
+              useCORS: true,
+              allowTaint: true,
+              logging: false,
+              backgroundColor: '#FFFBF7'
+            }
+          });
+        });
+
+        const safe = topic.slice(0, 20).replace(/[^\w\u0E00-\u0E7F]+/g, '-');
+        pdf.save(`maepla-${safe || 'post'}.pdf`);
+
+      } finally {
+        template.style.display = 'none';
+        pdfBtn.textContent = '📄 PDF';
+        pdfBtn.disabled = false;
+      }
+    }
+
+    // Enter key shortcut on topic input (helpful on desktop/keyboard)
+    // Auto-detect browser language on load
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('topic').addEventListener('keydown', e => {
+        if (e.key === 'Enter') generate();
+      });
+
+      const browserLang = navigator.language || navigator.userLanguage || '';
+      if (!browserLang.toLowerCase().startsWith('th')) {
+        const englishBtn = document.querySelectorAll('.lang-btn')[1];
+        setLang('english', englishBtn);
+      }
+    });
+  </script>
+
+</body>
+</html>
