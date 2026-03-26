@@ -271,7 +271,49 @@ export default async function handler(request) {
     });
   }
 
-  const { subject, year, topic, context, language = 'thai', curriculum = 'oxford', images = [], shortMode = false, fullText = '' } = body;
+  const { subject, year, topic, context, language = 'thai', curriculum = 'oxford', images = [], shortMode = false, fullText = '', weeklyMode = false, weeklyTopics = [] } = body;
+
+  if (weeklyMode) {
+    const curricName = curriculum === 'cambridge' ? 'Cambridge Primary' : 'Oxford International Primary';
+    const topicList = weeklyTopics.map(t => `• ${t.subject}: ${t.topic}`).join('\n');
+
+    const weeklySystem = language === 'english'
+      ? `You are Mae Pla, a warm and friendly mum at an international school in Thailand. Write a WEEKLY ROUNDUP post for the school's LINE OA group in ENGLISH to help parents understand what their children studied this week across multiple subjects. Structure: warm greeting, then cover each subject with a brief friendly explanation (2–3 sentences each), a simple home activity they can do together, and a warm closing. Use the same warm friendly tone as always. Aim for 350–450 words.`
+      : language === 'both'
+      ? `คุณคือแม่ปลา เขียน WEEKLY ROUNDUP สองภาษา (ไทยก่อน แล้วตามด้วยอังกฤษ) สรุปการเรียนรู้ประจำสัปดาห์ครอบคลุมทุกวิชา อบอุ่น เป็นกันเอง ใช้ ค่ะ/นะคะ ประมาณ 400–500 คำต่อภาษา`
+      : `คุณคือแม่ปลา (Mae Pla) คุณแม่ใจดีประจำโรงเรียน เขียนโพสต์ WEEKLY ROUNDUP สำหรับกลุ่ม LINE OA เป็นภาษาไทย สรุปการเรียนรู้ของลูกในสัปดาห์นี้ครอบคลุมทุกวิชาที่ได้เรียน โครงสร้าง: ทักทายอบอุ่น → อธิบายแต่ละวิชาสั้นๆ อบอุ่น 2–3 ประโยค → กิจกรรมง่ายๆ ที่ทำที่บ้านได้สัปดาห์นี้ → ปิดท้ายอบอุ่น ใช้ ค่ะ/นะคะ ตลอด ประมาณ 350–450 คำ`;
+
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const messageStream = client.messages.stream({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 1200,
+            system: weeklySystem,
+            messages: [{
+              role: 'user',
+              content: `ชั้นปี: ${year}\nหลักสูตร: ${curricName}\n\nวิชาและหัวข้อสัปดาห์นี้:\n${topicList}\n\nกรุณาเขียน Weekly Roundup ค่ะ`,
+            }],
+          });
+          for await (const event of messageStream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
+            }
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        } catch (error) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: error.message })}\n\n`));
+        } finally {
+          controller.close();
+        }
+      },
+    });
+    return new Response(stream, {
+      headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*' },
+    });
+  }
 
   if (!shortMode && (!topic || !topic.trim())) {
     return new Response(JSON.stringify({ error: 'กรุณาระบุหัวข้อการบ้าน' }), {

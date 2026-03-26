@@ -337,6 +337,73 @@
       min-height: 40px;
     }
 
+    /* ── MODE TOGGLE ── */
+    .mode-toggle {
+      display: flex;
+      gap: 0;
+      background: #FFF0E0;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #C4A882;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: white;
+      color: #92400E;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.15);
+    }
+
+    /* ── WEEKLY FORM ── */
+    .weekly-subject-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .weekly-subject-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 120px;
+      flex-shrink: 0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #92400E;
+    }
+
+    .weekly-subject-row input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1.5px solid #F0D9C4;
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.92rem;
+      color: #2C1810;
+      background: #FFFCF9;
+      transition: border-color 0.2s;
+    }
+
+    .weekly-subject-row input:focus {
+      outline: none;
+      border-color: #F97316;
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+    }
+
     /* ── TOPIC CHIPS ── */
     .topic-chips {
       display: flex;
@@ -665,6 +732,15 @@
     <!-- INPUT CARD -->
     <div class="card">
 
+      <!-- Mode toggle -->
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="mode-single" onclick="setMode('single')">📝 Single Post</button>
+        <button class="mode-btn" id="mode-weekly" onclick="setMode('weekly')">📅 Weekly Roundup</button>
+      </div>
+
+      <!-- Single post form -->
+      <div id="single-form">
+
       <div class="field">
         <label id="label-curriculum">Curriculum / หลักสูตร</label>
         <div class="lang-toggle">
@@ -749,6 +825,66 @@
 
         <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(this)">
       </div>
+
+      </div><!-- /single-form -->
+
+      <!-- Weekly roundup form -->
+      <div id="weekly-form" style="display:none;">
+
+        <div class="field">
+          <label id="weekly-label-curriculum">Curriculum / หลักสูตร</label>
+          <div class="lang-toggle">
+            <button class="weekly-curric-btn lang-btn active" onclick="setWeeklyCurriculum('oxford', this)">📘 Oxford</button>
+            <button class="weekly-curric-btn lang-btn" onclick="setWeeklyCurriculum('cambridge', this)">📗 Cambridge</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label id="weekly-label-lang">Post Language / ภาษาของโพสต์</label>
+          <div class="lang-toggle">
+            <button class="weekly-lang-btn lang-btn active" onclick="setWeeklyLang('thai', this)">🇹🇭 Thai</button>
+            <button class="weekly-lang-btn lang-btn" onclick="setWeeklyLang('english', this)">🇬🇧 English</button>
+            <button class="weekly-lang-btn lang-btn" onclick="setWeeklyLang('both', this)">🌏 Both</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label id="weekly-label-year" for="weekly-year">ชั้นปี / Year Group</label>
+          <select id="weekly-year">
+            <option value="ป.1">ป.1 · Year 1</option>
+            <option value="ป.2">ป.2 · Year 2</option>
+            <option value="ป.3">ป.3 · Year 3</option>
+            <option value="ป.4">ป.4 · Year 4</option>
+            <option value="ป.5">ป.5 · Year 5</option>
+            <option value="ป.6">ป.6 · Year 6</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="weekly-label-topics">This Week's Topics <span class="optional">(fill at least 2)</span></label>
+          <div class="weekly-subject-row">
+            <div class="weekly-subject-label">🔢 <span id="wl-maths">Maths</span></div>
+            <input type="text" id="w-maths" placeholder="e.g. Column addition" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="weekly-subject-row">
+            <div class="weekly-subject-label">🔬 <span id="wl-science">Science</span></div>
+            <input type="text" id="w-science" placeholder="e.g. Food chains" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="weekly-subject-row">
+            <div class="weekly-subject-label">📖 <span id="wl-english">English</span></div>
+            <input type="text" id="w-english" placeholder="e.g. Speech marks" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="weekly-subject-row">
+            <div class="weekly-subject-label">🇹🇭 <span id="wl-thai">ภาษาไทย</span></div>
+            <input type="text" id="w-thai" placeholder="เช่น มาตราตัวสะกด" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="weekly-subject-row">
+            <div class="weekly-subject-label">🌏 <span id="wl-social">สังคม</span></div>
+            <input type="text" id="w-social" placeholder="เช่น ภูมิภาคของไทย" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+      </div><!-- /weekly-form -->
 
       <button id="generate-btn" onclick="generate()">
         สร้างเนื้อหา ✦
@@ -894,8 +1030,32 @@
     let generatedText = '';
     let selectedLang = 'thai';
     let selectedCurriculum = 'oxford';
+    let selectedWeeklyLang = 'thai';
+    let selectedWeeklyCurriculum = 'oxford';
+    let appMode = 'single';
     let photos = [];
     const MAX_PHOTOS = 3;
+
+    function setMode(mode) {
+      appMode = mode;
+      document.getElementById('mode-single').classList.toggle('active', mode === 'single');
+      document.getElementById('mode-weekly').classList.toggle('active', mode === 'weekly');
+      document.getElementById('single-form').style.display = mode === 'single' ? '' : 'none';
+      document.getElementById('weekly-form').style.display = mode === 'weekly' ? '' : 'none';
+      document.getElementById('generate-btn').textContent  = mode === 'weekly' ? 'สร้าง Weekly Roundup ✦' : ui[selectedLang].btn;
+    }
+
+    function setWeeklyCurriculum(curriculum, btn) {
+      selectedWeeklyCurriculum = curriculum;
+      document.querySelectorAll('.weekly-curric-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function setWeeklyLang(lang, btn) {
+      selectedWeeklyLang = lang;
+      document.querySelectorAll('.weekly-lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
 
     function setCurriculum(curriculum, btn) {
       selectedCurriculum = curriculum;
@@ -1106,7 +1266,119 @@
       document.getElementById('add-photo-text').textContent = t.addPhoto;
     }
 
+    async function generateWeekly() {
+      const year = document.getElementById('weekly-year').value;
+      const weeklyTopics = [
+        { subject: 'คณิตศาสตร์', topic: document.getElementById('w-maths').value.trim() },
+        { subject: 'วิทยาศาสตร์', topic: document.getElementById('w-science').value.trim() },
+        { subject: 'ภาษาอังกฤษ', topic: document.getElementById('w-english').value.trim() },
+        { subject: 'ภาษาไทย',    topic: document.getElementById('w-thai').value.trim() },
+        { subject: 'สังคมศึกษา', topic: document.getElementById('w-social').value.trim() },
+      ].filter(t => t.topic);
+
+      if (weeklyTopics.length < 2) {
+        ['w-maths','w-science','w-english','w-thai','w-social'].forEach(id => {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) {
+            el.style.borderColor = '#F97316';
+            setTimeout(() => el.style.borderColor = '', 1800);
+          }
+        });
+        return;
+      }
+
+      const btn           = document.getElementById('generate-btn');
+      const outputSection = document.getElementById('output-section');
+      const outputText    = document.getElementById('output-text');
+      const errorMsg      = document.getElementById('error-msg');
+      const copyBtn       = document.getElementById('copy-btn');
+      const shortBtn      = document.getElementById('short-btn');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+      errorMsg.classList.remove('visible');
+      outputText.textContent = '';
+      generatedText = '';
+      copyBtn.textContent = ui[selectedWeeklyLang]?.copy || 'คัดลอก ✓';
+      copyBtn.classList.remove('copied');
+      shortBtn.style.display = 'none';
+      outputSection.classList.remove('visible', 'animated');
+      document.getElementById('output-mode').style.display = 'none';
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            weeklyMode: true,
+            weeklyTopics,
+            year,
+            language: selectedWeeklyLang,
+            curriculum: selectedWeeklyCurriculum,
+          }),
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error || `Error ${response.status}`);
+        }
+
+        outputSection.classList.add('visible');
+        requestAnimationFrame(() => requestAnimationFrame(() => outputSection.classList.add('animated')));
+        outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        outputText.appendChild(cursor);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const raw = line.slice(6);
+            if (raw === '[DONE]') break;
+            let parsed;
+            try { parsed = JSON.parse(raw); } catch { continue; }
+            if (parsed.error) throw new Error(parsed.error);
+            if (parsed.text) {
+              generatedText += parsed.text;
+              outputText.textContent = generatedText;
+              outputText.appendChild(cursor);
+            }
+          }
+        }
+
+        cursor.remove();
+        shortBtn.style.display = '';
+        shortBtn.textContent = '✦ Short';
+        shortBtn.dataset.mode = '';
+        fullLengthText = '';
+
+        if (generatedText) {
+          addToHistory('📅 Weekly', year, weeklyTopics.map(t => t.subject.substring(0,2)).join('·'), selectedWeeklyCurriculum, selectedWeeklyLang, generatedText);
+        }
+
+      } catch (err) {
+        outputSection.classList.remove('visible', 'animated');
+        errorMsg.textContent = `เกิดข้อผิดพลาด (${err.message})`;
+        errorMsg.classList.add('visible');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = appMode === 'weekly' ? 'สร้าง Weekly Roundup ✦' : ui[selectedLang].btn;
+      }
+    }
+
     async function generate() {
+      if (appMode === 'weekly') { generateWeekly(); return; }
+
       const subject = document.getElementById('subject').value;
       const year    = document.getElementById('year').value;
       const topic   = document.getElementById('topic').value.trim();
