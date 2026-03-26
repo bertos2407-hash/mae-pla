@@ -2,7 +2,10 @@
   "name": "mae-pla-content-tool",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0"
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@sparticuz/chromium": "^133.0.0",
+    "puppeteer-core": "^22.0.0"
   }
 }
