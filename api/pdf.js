@@ -247,7 +247,7 @@ function buildHtml({ text, subject, year, topic, curriculum, photos, dateStr }) 
       </div>
       <div class="school-badge">
         <div class="school-lbl">School</div>
-        <div class="school-name">Hastin International School</div>
+        <div class="school-name">Homework Helper for Parents</div>
       </div>
     </div>
 
@@ -289,7 +289,7 @@ const footerTpl = `<div style="
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
 ">
   <span style="font-weight:700;">แม่ปลา · Mae Pla</span>
-  <span style="color:#C4A882;">Hastin International School</span>
+  <span style="color:#C4A882;">Mae Pla · Homework Helper</span>
   <span style="font-weight:600;color:#B45309;">
     หน้า <span class="pageNumber"></span> / <span class="totalPages"></span>
   </span>
