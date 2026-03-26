@@ -766,84 +766,108 @@
   </main>
 
   <!-- PDF Template (hidden, captured by html2canvas) -->
-  <div id="pdf-template" style="position:fixed;left:-9999px;top:0;width:640px;background:#FFFBF7;font-family:'Sarabun',sans-serif;display:none;">
+  <div id="pdf-template" style="position:absolute;left:-9999px;top:0;width:680px;background:#FFFBF7;font-family:'Sarabun',sans-serif;display:none;">
 
     <!-- Top accent bar -->
-    <div style="height:5px;background:linear-gradient(90deg,#EA580C,#F97316,#FBBF24,#F97316,#EA580C);"></div>
+    <div style="height:6px;background:linear-gradient(90deg,#C2410C,#F97316,#FBBF24,#FB923C,#F97316,#C2410C);"></div>
 
-    <!-- Header -->
-    <div style="background:linear-gradient(135deg,#C2410C 0%,#F97316 45%,#FBBF24 100%);padding:24px 36px 20px;color:white;position:relative;overflow:hidden;page-break-inside:avoid;">
-      <div style="position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);"></div>
-      <div style="position:absolute;right:50px;bottom:-50px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+    <!-- Hero Header -->
+    <div style="background:linear-gradient(145deg,#7C2D12 0%,#C2410C 30%,#F97316 65%,#FBBF24 100%);padding:36px 44px 32px;color:white;position:relative;overflow:hidden;">
 
-      <!-- Logo + name -->
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;position:relative;">
-        <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-          <circle cx="50" cy="50" r="50" fill="rgba(255,255,255,0.22)"/>
-          <polygon points="20,50 36,37 36,63" fill="white"/>
-          <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
-          <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.6)"/>
-          <path d="M44,34 Q54,24 66,32" fill="none" stroke="rgba(251,191,36,0.75)" stroke-width="4.5" stroke-linecap="round"/>
-          <circle cx="72" cy="45" r="6" fill="rgba(234,88,12,0.3)"/>
-          <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
-          <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
-          <path d="M79,53 Q82,57 79,61" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-        <div>
-          <div style="font-size:1.85rem;font-weight:800;line-height:1.05;" id="pdf-app-name">แม่ปลา</div>
-          <div style="font-size:0.85rem;opacity:0.85;margin-top:3px;">Homework Helper for Parents · LINE OA</div>
+      <!-- Decorative circles -->
+      <div style="position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,0.06);"></div>
+      <div style="position:absolute;right:60px;bottom:-80px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+      <div style="position:absolute;left:-40px;bottom:-40px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+
+      <!-- Brand row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;position:relative;">
+        <div style="display:flex;align-items:center;gap:18px;">
+          <!-- Big fish logo -->
+          <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 100 100" width="52" height="52" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="20,50 36,37 36,63" fill="white"/>
+              <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+              <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.7)"/>
+              <path d="M44,34 Q54,24 66,32" fill="none" stroke="rgba(251,191,36,0.9)" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="72" cy="45" r="6" fill="rgba(234,88,12,0.25)"/>
+              <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
+              <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
+              <path d="M79,53 Q82,57 79,61" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-size:2.1rem;font-weight:800;line-height:1;letter-spacing:-0.01em;" id="pdf-app-name">แม่ปลา</div>
+            <div style="font-size:0.82rem;opacity:0.8;margin-top:5px;letter-spacing:0.03em;">Homework Helper for Parents</div>
+          </div>
+        </div>
+        <!-- School name badge -->
+        <div style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:30px;padding:8px 18px;text-align:right;">
+          <div style="font-size:0.62rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;">School</div>
+          <div style="font-size:0.85rem;font-weight:700;" id="pdf-school-name">Hastin International School</div>
         </div>
       </div>
 
-      <!-- Topic card -->
-      <div style="background:rgba(255,255,255,0.17);border:1px solid rgba(255,255,255,0.3);border-radius:12px;padding:13px 18px;position:relative;">
-        <div style="font-size:0.65rem;font-weight:700;opacity:0.7;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;">📚 Homework Topic</div>
-        <div style="font-size:1.15rem;font-weight:700;line-height:1.3;" id="pdf-topic-text">—</div>
-        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;" id="pdf-tags"></div>
+      <!-- Topic hero card -->
+      <div style="background:rgba(255,255,255,0.14);border:1.5px solid rgba(255,255,255,0.28);border-radius:16px;padding:18px 22px;position:relative;">
+        <div style="font-size:0.6rem;font-weight:700;opacity:0.65;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">📚 Homework Topic</div>
+        <div style="font-size:1.3rem;font-weight:800;line-height:1.3;margin-bottom:14px;" id="pdf-topic-text">—</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="pdf-tags"></div>
       </div>
     </div>
 
+    <!-- Divider wave -->
+    <div style="height:8px;background:linear-gradient(90deg,#FED7AA,#FDBA74,#FED7AA);"></div>
+
     <!-- Photos section -->
-    <div id="pdf-photos-section" style="padding:22px 36px 0;display:none;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-        <div style="width:3px;height:16px;background:linear-gradient(#F97316,#FBBF24);border-radius:2px;flex-shrink:0;"></div>
-        <div style="font-size:0.68rem;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:0.08em;">📷 Worksheet Photos</div>
+    <div id="pdf-photos-section" style="padding:28px 44px 0;display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="width:4px;height:20px;background:linear-gradient(#F97316,#FBBF24);border-radius:4px;flex-shrink:0;"></div>
+        <div style="font-size:0.7rem;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:0.1em;">Worksheet Photos</div>
       </div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;" id="pdf-photos-grid"></div>
-      <div style="height:1px;background:linear-gradient(90deg,#FDDCB5,transparent);margin-top:22px;"></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;" id="pdf-photos-grid"></div>
+      <div style="height:1.5px;background:linear-gradient(90deg,#FDDCB5,transparent);margin-top:28px;"></div>
     </div>
 
     <!-- Content section -->
-    <div style="padding:22px 36px 26px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-        <div style="width:3px;height:16px;background:linear-gradient(#F97316,#FBBF24);border-radius:2px;flex-shrink:0;"></div>
-        <div style="font-size:0.68rem;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:0.08em;">📋 LINE OA Post</div>
+    <div style="padding:28px 44px 32px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+        <div style="width:4px;height:20px;background:linear-gradient(#F97316,#FBBF24);border-radius:4px;flex-shrink:0;"></div>
+        <div style="font-size:0.7rem;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:0.1em;">LINE OA Post</div>
       </div>
-      <div style="background:white;border:1.5px solid #FDDCB5;border-radius:14px;padding:22px 20px;box-shadow:0 2px 14px rgba(249,115,22,0.06);">
-        <div style="font-size:0.9rem;line-height:1.85;white-space:pre-wrap;color:#2C1810;" id="pdf-content"></div>
+      <!-- Content card -->
+      <div style="background:white;border:1.5px solid #FDDCB5;border-radius:18px;padding:28px 26px;box-shadow:0 4px 24px rgba(249,115,22,0.08),0 1px 4px rgba(249,115,22,0.06);">
+        <!-- Decorative top bar on card -->
+        <div style="height:3px;background:linear-gradient(90deg,#F97316,#FBBF24,transparent);border-radius:2px;margin-bottom:20px;"></div>
+        <div style="font-size:0.97rem;line-height:2;white-space:pre-wrap;color:#1C0A00;letter-spacing:0.01em;" id="pdf-content"></div>
       </div>
     </div>
 
     <!-- Footer -->
-    <div style="margin:0 36px;height:1px;background:linear-gradient(90deg,#FDDCB5,transparent);"></div>
-    <div style="padding:13px 36px 20px;display:flex;justify-content:space-between;align-items:center;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <svg viewBox="0 0 100 100" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="50" fill="#FFF0E0"/>
-          <polygon points="20,50 36,37 36,63" fill="#F97316"/>
-          <ellipse cx="57" cy="50" rx="26" ry="17" fill="#F97316"/>
-          <ellipse cx="56" cy="57" rx="18" ry="8" fill="#FBBF24"/>
-          <circle cx="72" cy="45" r="5" fill="white"/>
-          <circle cx="73" cy="45" r="3" fill="#2C1810"/>
-          <circle cx="74.5" cy="43.5" r="1.2" fill="white"/>
-        </svg>
-        <span style="font-size:0.75rem;color:#B45309;font-weight:600;">แม่ปลา · Mae Pla · Mother Fish</span>
+    <div style="background:linear-gradient(135deg,#FFF7ED,#FFFBF7);border-top:1.5px solid #FDDCB5;padding:16px 44px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#F97316,#FBBF24);display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 100 100" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="20,50 36,37 36,63" fill="white"/>
+            <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+            <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.7)"/>
+            <circle cx="72" cy="45" r="5" fill="rgba(234,88,12,0.2)"/>
+            <circle cx="73" cy="45" r="3" fill="#7C2D12"/>
+            <circle cx="74.5" cy="43.5" r="1.2" fill="white"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:700;color:#92400E;">แม่ปลา · Mae Pla</div>
+          <div style="font-size:0.65rem;color:#C4A882;margin-top:1px;">Powered by AI · For Parents</div>
+        </div>
       </div>
-      <span style="font-size:0.72rem;color:#C4A882;" id="pdf-footer-date"></span>
+      <div style="text-align:right;">
+        <div style="font-size:0.72rem;color:#B45309;font-weight:600;" id="pdf-footer-date"></div>
+        <div style="font-size:0.62rem;color:#C4A882;margin-top:2px;" id="pdf-footer-curriculum"></div>
+      </div>
     </div>
 
     <!-- Bottom accent bar -->
-    <div style="height:4px;background:linear-gradient(90deg,#EA580C,#F97316,#FBBF24,#F97316,#EA580C);"></div>
+    <div style="height:6px;background:linear-gradient(90deg,#C2410C,#F97316,#FBBF24,#FB923C,#F97316,#C2410C);"></div>
 
   </div>
 
@@ -1408,16 +1432,19 @@
       document.getElementById('pdf-topic-text').textContent = topic || subject;
 
       // Coloured tags
+      const tagStyle = 'background:rgba(255,255,255,0.22);border:1.5px solid rgba(255,255,255,0.38);border-radius:30px;padding:5px 16px;font-size:0.8rem;font-weight:700;';
       document.getElementById('pdf-tags').innerHTML = [
-        `<span style="background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.45);border-radius:20px;padding:5px 14px;font-size:0.82rem;font-weight:700;">${subject}</span>`,
-        `<span style="background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.45);border-radius:20px;padding:5px 14px;font-size:0.82rem;font-weight:700;">${year}</span>`,
-        `<span style="background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.45);border-radius:20px;padding:5px 14px;font-size:0.82rem;font-weight:700;">${curricLabel}</span>`,
+        `<span style="${tagStyle}">${subject}</span>`,
+        `<span style="${tagStyle}">${year}</span>`,
+        `<span style="${tagStyle}">${curricLabel}</span>`,
       ].join('');
 
-      // Date footer
+      // Date & curriculum footer
       const now = new Date();
       document.getElementById('pdf-footer-date').textContent =
         now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('pdf-footer-curriculum').textContent =
+        `${curricLabel} · ${subject} · ${year}`;
 
       // Photos — inject base64 images directly (no CORS needed)
       const photosSection = document.getElementById('pdf-photos-section');
@@ -1438,6 +1465,8 @@
 
       try {
         await document.fonts.ready;
+        // Allow layout to fully settle before capture
+        await new Promise(r => setTimeout(r, 300));
 
         const canvas = await html2canvas(template, {
           scale: 2,
