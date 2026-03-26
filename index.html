@@ -285,6 +285,23 @@
       border-color: #A7F3D0;
     }
 
+    #short-btn {
+      padding: 9px 14px;
+      background: linear-gradient(135deg, #F97316, #FBBF24);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.3);
+    }
+
+    #short-btn:active { transform: scale(0.97); }
+    #short-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
     #pdf-btn, #print-btn {
       padding: 9px 14px;
       background: #FFF7ED;
@@ -748,9 +765,11 @@
         <h3 id="output-header-title">📋 โพสต์ LINE OA</h3>
         <div class="output-actions">
           <button id="pdf-btn" onclick="printContent()">📄 PDF</button>
+          <button id="short-btn" onclick="generateShort()" style="display:none;">✦ Short</button>
           <button id="copy-btn" onclick="copyContent()">คัดลอก ✓</button>
         </div>
       </div>
+      <div id="output-mode" style="display:none;font-size:0.75rem;font-weight:700;color:#F97316;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;"></div>
       <div id="output-text"></div>
     </div>
 
@@ -1185,6 +1204,14 @@
         // Remove cursor when done
         cursor.remove();
 
+        // Show short button, reset state
+        const shortBtn = document.getElementById('short-btn');
+        shortBtn.style.display = '';
+        shortBtn.textContent = '✦ Short';
+        shortBtn.dataset.mode = '';
+        document.getElementById('output-mode').style.display = 'none';
+        fullLengthText = '';
+
         // Save to history
         if (generatedText) {
           const subjectEl = document.getElementById('subject');
@@ -1205,6 +1232,89 @@
       } finally {
         btn.disabled = false;
         btn.textContent = ui[selectedLang].btn;
+      }
+    }
+
+    let fullLengthText = ''; // stores the original full post so we can toggle back
+
+    async function generateShort() {
+      if (!generatedText) return;
+
+      const shortBtn  = document.getElementById('short-btn');
+      const outputText = document.getElementById('output-text');
+      const outputMode = document.getElementById('output-mode');
+      const copyBtn   = document.getElementById('copy-btn');
+
+      // If already showing short, toggle back to full
+      if (shortBtn.dataset.mode === 'short') {
+        generatedText = fullLengthText;
+        outputText.textContent = fullLengthText;
+        outputMode.style.display = 'none';
+        shortBtn.textContent = '✦ Short';
+        shortBtn.dataset.mode = '';
+        copyBtn.textContent = ui[selectedLang].copy;
+        copyBtn.classList.remove('copied');
+        return;
+      }
+
+      fullLengthText = generatedText;
+      shortBtn.disabled = true;
+      shortBtn.textContent = '...';
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shortMode: true, fullText: generatedText, language: selectedLang, topic: document.getElementById('topic').value.trim() }),
+        });
+
+        if (!response.ok) throw new Error('Failed');
+
+        generatedText = '';
+        outputText.textContent = '';
+        outputMode.textContent = '✦ Short version';
+        outputMode.style.display = 'block';
+
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        outputText.appendChild(cursor);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const raw = line.slice(6);
+            if (raw === '[DONE]') break;
+            let parsed;
+            try { parsed = JSON.parse(raw); } catch { continue; }
+            if (parsed.text) {
+              generatedText += parsed.text;
+              outputText.textContent = generatedText;
+              outputText.appendChild(cursor);
+            }
+          }
+        }
+
+        cursor.remove();
+        shortBtn.textContent = '↩ Full';
+        shortBtn.dataset.mode = 'short';
+        copyBtn.textContent = ui[selectedLang].copy;
+        copyBtn.classList.remove('copied');
+
+      } catch {
+        generatedText = fullLengthText;
+        outputText.textContent = fullLengthText;
+        outputMode.style.display = 'none';
+      } finally {
+        shortBtn.disabled = false;
       }
     }
 

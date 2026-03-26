@@ -271,12 +271,48 @@ export default async function handler(request) {
     });
   }
 
-  const { subject, year, topic, context, language = 'thai', curriculum = 'oxford', images = [] } = body;
+  const { subject, year, topic, context, language = 'thai', curriculum = 'oxford', images = [], shortMode = false, fullText = '' } = body;
 
-  if (!topic || !topic.trim()) {
+  if (!shortMode && (!topic || !topic.trim())) {
     return new Response(JSON.stringify({ error: 'กรุณาระบุหัวข้อการบ้าน' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (shortMode) {
+    const shortSystem = language === 'english'
+      ? `You are Mae Pla, a warm school communication assistant. Write a SHORT teaser post (3–4 lines maximum) summarising the homework topic for a LINE group message. It should be warm, friendly, end with an invitation to read the full post or check the worksheet. No bullet points, no sections — just a flowing friendly mini-message. Do not add any explanation or preamble, just the post itself.`
+      : language === 'both'
+      ? `คุณคือแม่ปลา เขียนโพสต์สั้น 3–4 บรรทัด สรุปการบ้านในสองภาษา (ไทยก่อน แล้วตามด้วยอังกฤษ) สำหรับกลุ่ม LINE อบอุ่น เป็นกันเอง ลงท้ายด้วยการเชิญชวนให้อ่านโพสต์เต็มค่ะ`
+      : `คุณคือแม่ปลา เขียนโพสต์สั้นๆ 3–4 บรรทัด สำหรับกลุ่ม LINE สรุปการบ้านให้ผู้ปกครองทราบ อบอุ่น เป็นกันเอง ใช้ ค่ะ/นะคะ ลงท้ายด้วยการเชิญชวนให้อ่านโพสต์เต็มนะคะ ห้ามใช้หัวข้อย่อยหรือรายการ — เขียนเป็นย่อหน้าเดียวลื่นไหลค่ะ`;
+
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const messageStream = client.messages.stream({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 200,
+            system: shortSystem,
+            messages: [{ role: 'user', content: `Here is the full post — please write the short version:\n\n${fullText}` }],
+          });
+          for await (const event of messageStream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
+            }
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        } catch (error) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: error.message })}\n\n`));
+        } finally {
+          controller.close();
+        }
+      },
+    });
+    return new Response(stream, {
+      headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*' },
     });
   }
 
