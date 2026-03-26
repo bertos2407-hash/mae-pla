@@ -1444,30 +1444,31 @@
           useCORS: true,
           allowTaint: true,
           logging: false,
-          backgroundColor: '#FFFBF7'
+          backgroundColor: '#FFFBF7',
+          windowWidth: 640,
         });
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
-        await new Promise((resolve) => {
-          pdf.html(template, {
-            callback: function(doc) { resolve(doc); },
-            margin: [0, 0, 0, 0],
-            autoPaging: 'text',
-            x: 0,
-            y: 0,
-            width: 210,
-            windowWidth: 640,
-            html2canvas: {
-              scale: 2,
-              useCORS: true,
-              allowTaint: true,
-              logging: false,
-              backgroundColor: '#FFFBF7'
-            }
-          });
-        });
+        const pageW = 210;
+        const pageH = 297;
+        const imgW  = pageW;
+        const imgH  = (canvas.height * pageW) / canvas.width;
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+        if (imgH <= pageH) {
+          pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
+        } else {
+          let yOffset = 0;
+          let remaining = imgH;
+          while (remaining > 0) {
+            pdf.addImage(imgData, 'JPEG', 0, -yOffset, imgW, imgH);
+            remaining -= pageH;
+            yOffset   += pageH;
+            if (remaining > 0) pdf.addPage();
+          }
+        }
 
         const safe = topic.slice(0, 20).replace(/[^\w\u0E00-\u0E7F]+/g, '-');
         pdf.save(`maepla-${safe || 'post'}.pdf`);
