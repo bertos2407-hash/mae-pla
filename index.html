@@ -1257,7 +1257,10 @@
           </div>
         </div>` : '';
 
-      const safeText = generatedText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const safeText = generatedText
+        .split(/\n\n+/)
+        .map(para => `<p>${para.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>`)
+        .join('');
 
       const win = window.open('', '_blank');
       win.document.write(`<!DOCTYPE html>
@@ -1271,6 +1274,10 @@
 
     @page {
       size: A4;
+      margin: 18mm 14mm 14mm;
+    }
+
+    @page :first {
       margin: 0;
     }
 
@@ -1395,13 +1402,19 @@
       border-radius: 2px;
       margin-bottom: 22px;
     }
-    .content-text {
+    .content-text p {
       font-size: 1rem;
       line-height: 2;
-      white-space: pre-wrap;
       color: #1C0A00;
       letter-spacing: 0.01em;
+      margin-bottom: 0.9em;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      orphans: 3;
+      widows: 3;
     }
+
+    .content-text p:last-child { margin-bottom: 0; }
 
     /* ── FOOTER ── */
     .footer {
@@ -1487,6 +1500,7 @@
     <div class="content-card">
       <div class="content-top-bar"></div>
       <div class="content-text">${safeText}</div>
+
     </div>
   </div>
 
