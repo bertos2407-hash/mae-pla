@@ -747,7 +747,7 @@
       <div class="output-header">
         <h3 id="output-header-title">📋 โพสต์ LINE OA</h3>
         <div class="output-actions">
-          <button id="pdf-btn" onclick="downloadPdf()">📄 PDF</button>
+          <button id="pdf-btn" onclick="printContent()">📄 PDF</button>
           <button id="copy-btn" onclick="copyContent()">คัดลอก ✓</button>
         </div>
       </div>
@@ -1250,132 +1250,224 @@
       const dateStr = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
 
       const photosHtml = photos.length > 0 ? `
-        <div class="section">
+        <div class="photos-section avoid-break">
           <div class="section-label">📷 Worksheet Photos</div>
           <div class="photos-grid">
             ${photos.map(p => `<img src="data:${p.type};base64,${p.base64}">`).join('')}
           </div>
         </div>` : '';
 
+      const safeText = generatedText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
       const win = window.open('', '_blank');
       win.document.write(`<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>แม่ปลา · ${topic}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>แม่ปลา · ${topic || subject}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Sarabun', sans-serif; background: white; color: #2C1810; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: white;
+      color: #1C0A00;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ── HEADER ── */
     .header {
-      background: linear-gradient(135deg, #C2410C 0%, #F97316 45%, #FBBF24 100%);
-      padding: 28px 40px 24px;
+      background: linear-gradient(145deg, #7C2D12 0%, #C2410C 30%, #F97316 65%, #FBBF24 100%);
+      padding: 36px 48px 32px;
       color: white;
+      position: relative;
+      overflow: hidden;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
-    .header-top { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-    .header-top svg { flex-shrink: 0; }
-    .app-name { font-size: 1.8rem; font-weight: 800; line-height: 1.05; }
-    .app-sub  { font-size: 0.85rem; opacity: 0.85; margin-top: 3px; }
-    .topic-card {
+    .header-circle1 { position:absolute;right:-70px;top:-70px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,0.06); }
+    .header-circle2 { position:absolute;right:60px;bottom:-90px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04); }
+    .header-circle3 { position:absolute;left:-50px;bottom:-50px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.04); }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .brand-left { display: flex; align-items: center; gap: 18px; }
+    .fish-ring {
+      width: 72px; height: 72px; border-radius: 50%;
       background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.32);
-      border-radius: 12px;
-      padding: 13px 18px;
+      border: 2px solid rgba(255,255,255,0.32);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
-    .topic-label { font-size: 0.62rem; font-weight: 700; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
-    .topic-title { font-size: 1.1rem; font-weight: 700; }
-    .tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+    .app-name { font-size: 2.2rem; font-weight: 800; line-height: 1; letter-spacing: -0.01em; }
+    .app-sub  { font-size: 0.82rem; opacity: 0.8; margin-top: 5px; letter-spacing: 0.03em; }
+
+    .school-badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 30px;
+      padding: 8px 20px;
+      text-align: right;
+    }
+    .school-label { font-size: 0.6rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+    .school-name  { font-size: 0.88rem; font-weight: 700; }
+
+    .topic-card {
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      padding: 18px 22px;
+      position: relative;
+    }
+    .topic-label { font-size: 0.6rem; font-weight: 700; opacity: 0.65; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+    .topic-title { font-size: 1.35rem; font-weight: 800; line-height: 1.3; margin-bottom: 14px; }
+    .tags { display: flex; gap: 8px; flex-wrap: wrap; }
     .tag {
-      background: rgba(255,255,255,0.25);
-      border: 1px solid rgba(255,255,255,0.4);
-      border-radius: 20px;
-      padding: 4px 13px;
+      background: rgba(255,255,255,0.22);
+      border: 1.5px solid rgba(255,255,255,0.38);
+      border-radius: 30px;
+      padding: 5px 16px;
       font-size: 0.8rem;
       font-weight: 700;
     }
 
-    .body { padding: 28px 40px; }
+    /* ── WAVE DIVIDER ── */
+    .wave { height: 8px; background: linear-gradient(90deg,#FED7AA,#FDBA74,#FED7AA); }
 
-    .section { margin-bottom: 24px; }
+    /* ── BODY ── */
+    .body { padding: 32px 48px 36px; }
+
     .section-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: #92400E;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 14px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #92400E;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 18px;
     }
     .section-label::before {
       content: '';
       display: inline-block;
-      width: 3px;
-      height: 16px;
+      width: 4px; height: 20px;
       background: linear-gradient(#F97316, #FBBF24);
-      border-radius: 2px;
+      border-radius: 4px;
       flex-shrink: 0;
     }
 
-    .photos-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+    /* ── PHOTOS ── */
+    .photos-section { margin-bottom: 28px; }
+    .photos-grid { display: flex; gap: 14px; flex-wrap: wrap; }
     .photos-grid img {
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1.5px solid #FDDCB5;
-      max-height: 220px;
-      max-width: 100%;
+      max-height: 240px;
+      max-width: 48%;
       object-fit: cover;
     }
+    .photos-divider { height: 1.5px; background: linear-gradient(90deg,#FDDCB5,transparent); margin-top: 28px; }
 
+    /* ── CONTENT CARD ── */
     .content-card {
-      background: #FFFBF7;
+      background: white;
       border: 1.5px solid #FDDCB5;
-      border-radius: 14px;
-      padding: 24px 22px;
+      border-radius: 18px;
+      padding: 30px 28px;
+      box-shadow: 0 4px 24px rgba(249,115,22,0.07);
+    }
+    .content-top-bar {
+      height: 3px;
+      background: linear-gradient(90deg, #F97316, #FBBF24, transparent);
+      border-radius: 2px;
+      margin-bottom: 22px;
     }
     .content-text {
-      font-size: 0.97rem;
-      line-height: 1.95;
+      font-size: 1rem;
+      line-height: 2;
       white-space: pre-wrap;
-      color: #2C1810;
+      color: #1C0A00;
+      letter-spacing: 0.01em;
     }
 
+    /* ── FOOTER ── */
     .footer {
-      border-top: 1.5px solid #F5E6D8;
-      padding: 14px 40px;
+      background: linear-gradient(135deg, #FFF7ED, #FFFBF7);
+      border-top: 1.5px solid #FDDCB5;
+      padding: 16px 48px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
-    .footer-brand { font-size: 0.78rem; color: #B45309; font-weight: 600; }
-    .footer-date  { font-size: 0.74rem; color: #C4A882; }
+    .footer-left { display: flex; align-items: center; gap: 10px; }
+    .footer-fish {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, #F97316, #FBBF24);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .footer-brand { font-size: 0.8rem; font-weight: 700; color: #92400E; }
+    .footer-sub   { font-size: 0.65rem; color: #C4A882; margin-top: 2px; }
+    .footer-date  { font-size: 0.72rem; color: #B45309; font-weight: 600; text-align: right; }
+    .footer-curric { font-size: 0.62rem; color: #C4A882; margin-top: 2px; text-align: right; }
+
+    .bottom-bar { height: 6px; background: linear-gradient(90deg,#C2410C,#F97316,#FBBF24,#FB923C,#F97316,#C2410C); }
+
+    /* ── PAGE BREAK RULES ── */
+    .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+    .content-text { orphans: 3; widows: 3; }
 
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="header-top">
-      <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="50" fill="rgba(255,255,255,0.22)"/>
-        <polygon points="20,50 36,37 36,63" fill="white"/>
-        <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
-        <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.6)"/>
-        <path d="M44,34 Q54,24 66,32" fill="none" stroke="rgba(251,191,36,0.75)" stroke-width="4.5" stroke-linecap="round"/>
-        <circle cx="72" cy="45" r="6" fill="rgba(234,88,12,0.3)"/>
-        <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
-        <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
-        <path d="M79,53 Q82,57 79,61" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-      <div>
-        <div class="app-name">${appName}</div>
-        <div class="app-sub">Homework Helper for Parents · LINE OA</div>
+
+  <div class="header avoid-break">
+    <div class="header-circle1"></div>
+    <div class="header-circle2"></div>
+    <div class="header-circle3"></div>
+
+    <div class="brand-row">
+      <div class="brand-left">
+        <div class="fish-ring">
+          <svg viewBox="0 0 100 100" width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="20,50 36,37 36,63" fill="white"/>
+            <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+            <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.7)"/>
+            <path d="M44,34 Q54,24 66,32" fill="none" stroke="rgba(251,191,36,0.9)" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="72" cy="45" r="6" fill="rgba(234,88,12,0.25)"/>
+            <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
+            <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
+            <path d="M79,53 Q82,57 79,61" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="app-name">${appName}</div>
+          <div class="app-sub">Homework Helper for Parents</div>
+        </div>
+      </div>
+      <div class="school-badge">
+        <div class="school-label">School</div>
+        <div class="school-name">Hastin International School</div>
       </div>
     </div>
+
     <div class="topic-card">
       <div class="topic-label">📚 Homework Topic</div>
       <div class="topic-title">${topic || subject}</div>
@@ -1387,24 +1479,44 @@
     </div>
   </div>
 
+  <div class="wave"></div>
+
   <div class="body">
     ${photosHtml}
-    <div class="section">
-      <div class="section-label">LINE OA Post</div>
-      <div class="content-card">
-        <div class="content-text">${generatedText.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-      </div>
+    <div class="section-label">LINE OA Post</div>
+    <div class="content-card">
+      <div class="content-top-bar"></div>
+      <div class="content-text">${safeText}</div>
     </div>
   </div>
 
-  <div class="footer">
-    <span class="footer-brand">แม่ปลา · Mae Pla · Mother Fish</span>
-    <span class="footer-date">${dateStr}</span>
+  <div class="footer avoid-break">
+    <div class="footer-left">
+      <div class="footer-fish">
+        <svg viewBox="0 0 100 100" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="20,50 36,37 36,63" fill="white"/>
+          <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+          <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.7)"/>
+          <circle cx="73" cy="45" r="3" fill="#7C2D12"/>
+          <circle cx="74.5" cy="43.5" r="1.2" fill="white"/>
+        </svg>
+      </div>
+      <div>
+        <div class="footer-brand">แม่ปลา · Mae Pla · Mother Fish</div>
+        <div class="footer-sub">Powered by AI · For Parents</div>
+      </div>
+    </div>
+    <div>
+      <div class="footer-date">${dateStr}</div>
+      <div class="footer-curric">${curricLabel} · ${subject} · ${year}</div>
+    </div>
   </div>
+
+  <div class="bottom-bar"></div>
 
   <scr` + `ipt>
     window.onload = function() {
-      setTimeout(function() { window.print(); }, 800);
+      setTimeout(function() { window.print(); }, 600);
     };
   </scr` + `ipt>
 </body>
