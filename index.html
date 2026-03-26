@@ -1378,15 +1378,16 @@
 
     /* ── PHOTOS ── */
     .photos-section { margin-bottom: 28px; }
-    .photos-grid { display: flex; gap: 14px; flex-wrap: wrap; }
+    .photos-grid { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
     .photos-grid img {
-      border-radius: 12px;
-      border: 1.5px solid #FDDCB5;
-      max-height: 240px;
-      max-width: 48%;
+      border-radius: 14px;
+      border: 2px solid #FDDCB5;
+      box-shadow: 0 3px 12px rgba(249,115,22,0.1);
+      max-height: 280px;
+      flex: 1;
+      min-width: 180px;
       object-fit: cover;
     }
-    .photos-divider { height: 1.5px; background: linear-gradient(90deg,#FDDCB5,transparent); margin-top: 28px; }
 
     /* ── CONTENT CARD ── */
     .content-card {
@@ -1530,7 +1531,17 @@
 
   <scr` + `ipt>
     window.onload = function() {
-      setTimeout(function() { window.print(); }, 600);
+      var images = Array.from(document.images);
+      if (images.length === 0) {
+        setTimeout(function() { window.print(); }, 400);
+        return;
+      }
+      Promise.all(images.map(function(img) {
+        if (img.complete) return Promise.resolve();
+        return new Promise(function(resolve) { img.onload = resolve; img.onerror = resolve; });
+      })).then(function() {
+        setTimeout(function() { window.print(); }, 300);
+      });
     };
   </scr` + `ipt>
 </body>
