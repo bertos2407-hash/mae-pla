@@ -1446,6 +1446,13 @@
           logging: false,
           backgroundColor: '#FFFBF7',
           windowWidth: 640,
+          onclone: (clonedDoc) => {
+            const el = clonedDoc.getElementById('pdf-template');
+            el.style.position = 'relative';
+            el.style.left = '0';
+            el.style.top = '0';
+            el.style.display = 'block';
+          },
         });
 
         const { jsPDF } = window.jspdf;
