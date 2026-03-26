@@ -320,6 +320,34 @@
       min-height: 40px;
     }
 
+    /* ── TOPIC CHIPS ── */
+    .topic-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .topic-chip {
+      padding: 6px 13px;
+      background: #FFF7ED;
+      border: 1.5px solid #FDDCB5;
+      border-radius: 20px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #92400E;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .topic-chip:active {
+      background: linear-gradient(135deg, #F97316, #FBBF24);
+      border-color: transparent;
+      color: white;
+    }
+
     /* ── PHOTO UPLOAD ── */
     .photo-upload-empty {
       border: 2px dashed #F0D9C4;
@@ -670,6 +698,7 @@
           autocorrect="off"
           spellcheck="false"
         >
+        <div class="topic-chips" id="topic-chips"></div>
       </div>
 
       <div class="field">
@@ -1022,6 +1051,8 @@
       document.getElementById('app-name').textContent = t.appname;
       document.getElementById('header-sub').textContent = t.subtitle;
       document.getElementById('label-curriculum').textContent = t.curriculum;
+
+      renderTopicChips();
 
       // Update photo labels
       document.getElementById('label-photo').firstChild.textContent = t.photo + ' ';
@@ -1446,6 +1477,58 @@
       }
     }
 
+    // ── TOPIC CHIPS ──
+    const TOPIC_CHIPS_DATA = {
+      'คณิตศาสตร์': {
+        'ป.1': { th: ['Number bonds to 10 & 20', 'การนับถึง 100', 'การบวกลบในสิบ', 'รูปทรงเรขาคณิต', 'การบอกเวลา'], en: ['Number bonds to 10 & 20', 'Counting to 100', 'Addition & subtraction within 20', '2D & 3D shapes', 'Telling the time'] },
+        'ป.2': { th: ['ค่าประจำหลัก (หลักสิบ หลักหน่วย)', 'การบวกลบถึง 100', 'สูตรคูณ 2× 5× 10×', 'เศษส่วน (½ ¼ ⅓)', 'การวัดความยาว'], en: ['Place value to 100', 'Addition & subtraction to 100', 'Times tables 2× 5× 10×', 'Fractions (½ ¼ ⅓)', 'Measuring length'] },
+        'ป.3': { th: ['การบวกลบแบบตั้งยาว', 'สูตรคูณถึง 10×10', 'เศษส่วนเทียบเท่า', 'เส้นรอบรูป', 'นาฬิกา 24 ชั่วโมง'], en: ['Column addition & subtraction', 'Multiplication tables to 10×', 'Equivalent fractions', 'Perimeter', '24-hour clock'] },
+        'ป.4': { th: ['การคูณการหารแบบตั้งยาว', 'ทศนิยม', 'เศษส่วน', 'พื้นที่และเส้นรอบรูป', 'มุมและพิกัด'], en: ['Long multiplication & division', 'Decimals', 'Fractions', 'Area & perimeter', 'Angles & coordinates'] },
+        'ป.5': { th: ['การคูณยาว', 'การหารยาว', 'เศษส่วน (บวก ลบ คูณ)', 'ร้อยละ', 'อัตราส่วน'], en: ['Long multiplication', 'Long division', 'Fractions (add, subtract, multiply)', 'Percentages', 'Ratio & proportion'] },
+        'ป.6': { th: ['พีชคณิต', 'เศษส่วน ทศนิยม ร้อยละ', 'วงกลม (รัศมี เส้นผ่านศูนย์กลาง)', 'ปริมาตร', 'ความน่าจะเป็น'], en: ['Algebra', 'Fractions, decimals & percentages', 'Circles (radius, diameter)', 'Volume', 'Probability'] },
+      },
+      'วิทยาศาสตร์': {
+        'ป.1': { th: ['สิ่งมีชีวิตและไม่มีชีวิต', 'ประสาทสัมผัสทั้ง 5', 'กลุ่มของสัตว์', 'วัสดุและสมบัติ', 'แรงผลักแรงดึง'], en: ['Living & non-living things', 'The five senses', 'Animal groups', 'Materials & properties', 'Forces: push & pull'] },
+        'ป.2': { th: ['ส่วนประกอบของพืช', 'ห่วงโซ่อาหาร', 'การเปลี่ยนแปลงของวัสดุ', 'แสงและเงา', 'แม่เหล็ก'], en: ['Parts of a plant', 'Food chains', 'Materials & changes', 'Light & shadows', 'Magnets'] },
+        'ป.3': { th: ['ฟันและโภชนาการ', 'หินและดิน', 'แสงและการสะท้อน', 'แรงเสียดทาน', 'วัฏจักรชีวิตพืช'], en: ['Teeth & nutrition', 'Rocks & soils', 'Light & reflection', 'Friction', 'Plant life cycles'] },
+        'ป.4': { th: ['แหล่งที่อยู่อาศัยและการปรับตัว', 'ระบบย่อยอาหาร', 'สถานะของสสาร', 'วงจรไฟฟ้า', 'เสียง'], en: ['Habitats & adaptation', 'The digestive system', 'States of matter', 'Electrical circuits', 'Sound'] },
+        'ป.5': { th: ['วัฏจักรชีวิต', 'การสืบพันธุ์ของพืช', 'การแยกสาร', 'โลกและอวกาศ', 'แรง (แรงโน้มถ่วง แรงเสียดทาน)'], en: ['Life cycles', 'Plant reproduction & seed dispersal', 'Separating mixtures', 'Earth & space', 'Forces: gravity & air resistance'] },
+        'ป.6': { th: ['จุลินทรีย์', 'การจัดจำแนกสิ่งมีชีวิต', 'วิวัฒนาการและการปรับตัว', 'แสงและการหักเห', 'วงจรไฟฟ้าอนุกรมและขนาน'], en: ['Microorganisms', 'Classification of living things', 'Evolution & adaptation', 'Light & refraction', 'Series & parallel circuits'] },
+      },
+      'ภาษาอังกฤษ': {
+        'ป.1': { th: ['Phonics และการสะกดคำ', 'Sight words', 'การเขียนประโยคง่ายๆ', 'การอ่านออกเสียง', 'คำศัพท์หมวดหมู่'], en: ['Phonics & blending', 'Sight words', 'Writing simple sentences', 'Reading aloud', 'Topic vocabulary'] },
+        'ป.2': { th: ['Nouns, verbs & adjectives', 'เครื่องหมายวรรคตอน', 'การเขียน recount', 'Digraphs (ch, sh, th)', 'Noun phrases'], en: ['Nouns, verbs & adjectives', 'Punctuation', 'Writing recounts', 'Digraphs (ch, sh, th)', 'Expanded noun phrases'] },
+        'ป.3': { th: ['Speech marks', 'Conjunctions', 'การเขียน instructions', 'Adverbs', 'Paragraphs'], en: ['Speech marks', 'Conjunctions', 'Writing instructions', 'Adverbs', 'Paragraphs'] },
+        'ป.4': { th: ['Similes & metaphors', 'Verb tenses', 'Relative clauses', 'Persuasive writing', 'Apostrophes'], en: ['Similes & metaphors', 'Verb tenses', 'Relative clauses', 'Persuasive writing', 'Apostrophes'] },
+        'ป.5': { th: ['Passive voice', 'Modal verbs', 'Balanced arguments', 'Narrative viewpoint', 'Formal vs informal'], en: ['Passive voice', 'Modal verbs', 'Balanced arguments', 'Narrative viewpoint', 'Formal vs informal register'] },
+        'ป.6': { th: ['Active vs passive voice', 'Cohesive devices', 'Précis writing', "Author's perspective & bias", 'Figurative language'], en: ['Active vs passive voice', 'Cohesive devices', 'Précis writing', "Author's perspective & bias", 'Figurative language'] },
+      },
+    };
+
+    function renderTopicChips() {
+      const subject = document.getElementById('subject').value;
+      const year    = document.getElementById('year').value;
+      const chips   = document.getElementById('topic-chips');
+      const isEn    = selectedLang === 'english';
+
+      const data = TOPIC_CHIPS_DATA[subject]?.[year];
+      if (!data) { chips.innerHTML = ''; return; }
+
+      const topics = isEn ? data.en : data.th;
+      chips.innerHTML = topics.map(t =>
+        `<button class="topic-chip" onclick="selectChip(this, '${t.replace(/'/g, "\\'")}')">${t}</button>`
+      ).join('');
+    }
+
+    function selectChip(btn, topic) {
+      document.getElementById('topic').value = topic;
+      // Briefly highlight the selected chip
+      document.querySelectorAll('.topic-chip').forEach(c => c.style.cssText = '');
+      btn.style.background = 'linear-gradient(135deg,#F97316,#FBBF24)';
+      btn.style.color = 'white';
+      btn.style.borderColor = 'transparent';
+    }
+
     // ── POST HISTORY ──
     const HISTORY_KEY = 'maepla_history';
     const MAX_HISTORY = 30;
@@ -1558,6 +1641,10 @@
       }
 
       renderHistory();
+      renderTopicChips();
+
+      document.getElementById('subject').addEventListener('change', renderTopicChips);
+      document.getElementById('year').addEventListener('change', renderTopicChips);
     });
   </script>
 
