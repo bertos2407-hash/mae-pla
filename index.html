@@ -724,7 +724,7 @@
       </svg>
     </div>
     <h1 id="app-name">แม่ปลา</h1>
-    <p id="header-sub">Homework Posts for Parents · สร้างโพสต์ LINE OA</p>
+    <p id="header-sub">เข้าใจการบ้านของลูก · Understand Your Child's Homework</p>
   </header>
 
   <main class="content">
@@ -734,8 +734,8 @@
 
       <!-- Mode toggle -->
       <div class="mode-toggle">
-        <button class="mode-btn active" id="mode-single" onclick="setMode('single')">📝 Single Post</button>
-        <button class="mode-btn" id="mode-weekly" onclick="setMode('weekly')">📅 Weekly Roundup</button>
+        <button class="mode-btn active" id="mode-single" onclick="setMode('single')">📝 One Subject</button>
+        <button class="mode-btn" id="mode-weekly" onclick="setMode('weekly')">📅 This Week</button>
       </div>
 
       <!-- Single post form -->
@@ -1134,9 +1134,9 @@
     const ui = {
       thai: {
         appname:    'แม่ปลา',
-        subtitle:   'สร้างโพสต์ LINE OA สำหรับผู้ปกครอง',
+        subtitle:   'เข้าใจการบ้านของลูก',
         curriculum: 'หลักสูตร',
-        lang:       'ภาษาของโพสต์',
+        lang:       'ภาษาของคำอธิบาย',
         subject:    'วิชา',
         year:       'ชั้นปี',
         topic:      'หัวข้อการบ้าน',
@@ -1148,17 +1148,17 @@
         photoOpt:   '(ไม่จำเป็น แต่แนะนำ)',
         photoTap:   'แตะเพื่อถ่ายรูปใบงาน',
         addPhoto:   'เพิ่มรูปอีก (สูงสุด 3 รูป)',
-        btn:        'สร้างเนื้อหา ✦',
+        btn:        'อธิบายการบ้าน ✦',
         hint:       'ใช้เวลาประมาณ 10–15 วินาที',
-        output:     '📋 โพสต์ LINE OA',
+        output:     '📋 คำอธิบายการบ้าน',
         copy:       'คัดลอก ✓',
         copied:     'คัดลอกแล้ว ✓',
       },
       english: {
         appname:    'Mae Pla · Mother Fish',
-        subtitle:   'Homework Posts for Parents',
+        subtitle:   'Understand Your Child\'s Homework',
         curriculum: 'Curriculum',
-        lang:       'Post Language',
+        lang:       'Explanation Language',
         subject:    'Subject',
         year:       'Year Group',
         topic:      'Homework Topic',
@@ -1170,17 +1170,17 @@
         photoOpt:   '(optional but recommended)',
         photoTap:   'Tap to photograph the worksheet',
         addPhoto:   'Add another photo (up to 3)',
-        btn:        'Create Content ✦',
+        btn:        'Explain This Homework ✦',
         hint:       'Takes about 10–15 seconds',
-        output:     '📋 LINE OA Post',
+        output:     '📋 Homework Explanation',
         copy:       'Copy ✓',
         copied:     'Copied ✓',
       },
       both: {
         appname:    'แม่ปลา · Mae Pla',
-        subtitle:   'Homework Posts for Parents · สร้างโพสต์ LINE OA',
+        subtitle:   'เข้าใจการบ้านของลูก · Understand Your Child\'s Homework',
         curriculum: 'Curriculum / หลักสูตร',
-        lang:       'Post Language / ภาษาของโพสต์',
+        lang:       'Explanation Language / ภาษาของคำอธิบาย',
         subject:    'Subject / วิชา',
         year:       'Year / ชั้นปี',
         topic:      'Homework Topic / หัวข้อการบ้าน',
@@ -1192,17 +1192,17 @@
         photoOpt:   '(optional / ไม่จำเป็น)',
         photoTap:   'Tap to add worksheet photo / แตะเพื่อถ่ายรูป',
         addPhoto:   'Add another / เพิ่มรูปอีก (up to 3)',
-        btn:        'Create Content ✦',
+        btn:        'Explain This Homework ✦',
         hint:       'Takes about 10–15 seconds',
-        output:     '📋 LINE OA Post (Bilingual / สองภาษา)',
+        output:     '📋 Homework Explanation',
         copy:       'Copy ✓',
         copied:     'Copied ✓',
       },
       enthai: {
         appname:    'แม่ปลา',
-        subtitle:   'สร้างโพสต์ LINE OA สำหรับผู้ปกครอง',
+        subtitle:   'เข้าใจการบ้านของลูก',
         curriculum: 'หลักสูตร',
-        lang:       'ภาษาของโพสต์',
+        lang:       'ภาษาของคำอธิบาย',
         subject:    'วิชา',
         year:       'ชั้นปี',
         topic:      'หัวข้อการบ้าน (ภาษาอังกฤษ)',
@@ -1214,9 +1214,9 @@
         photoOpt:   '(ไม่จำเป็น แต่แนะนำ)',
         photoTap:   'แตะเพื่อถ่ายรูปใบงาน',
         addPhoto:   'เพิ่มรูปอีก (สูงสุด 3 รูป)',
-        btn:        'สร้างเนื้อหา ✦',
+        btn:        'อธิบายการบ้าน ✦',
         hint:       'ใช้เวลาประมาณ 10–15 วินาที',
-        output:     '📋 โพสต์ LINE OA',
+        output:     '📋 คำอธิบายการบ้าน',
         copy:       'คัดลอก ✓',
         copied:     'คัดลอกแล้ว ✓',
       },
