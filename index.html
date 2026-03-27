@@ -1931,8 +1931,46 @@
       win.document.close();
     }
 
+    const STRIPE_MONTHLY = 'https://buy.stripe.com/test_9B68wP1jxbLd0108zW77O00';
+    const ACCESS_KEY     = 'maepla_access_expiry';
+    const ACCESS_DAYS    = 30;
+
+    function checkSubscriptionRedirect() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('subscribed') === '1') {
+        const expiry = Date.now() + ACCESS_DAYS * 24 * 60 * 60 * 1000;
+        localStorage.setItem(ACCESS_KEY, expiry);
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+
+    function hasPdfAccess() {
+      const expiry = localStorage.getItem(ACCESS_KEY);
+      return expiry && Date.now() < parseInt(expiry);
+    }
+
+    function showUpgradeModal() {
+      document.getElementById('upgrade-modal').style.display = 'flex';
+    }
+
+    function closeUpgradeModal() {
+      document.getElementById('upgrade-modal').style.display = 'none';
+    }
+
+    function goToStripe() {
+      window.open(STRIPE_MONTHLY, '_blank');
+      closeUpgradeModal();
+    }
+
+    checkSubscriptionRedirect();
+
     async function generatePdf() {
       if (!generatedText) return;
+
+      if (!hasPdfAccess()) {
+        showUpgradeModal();
+        return;
+      }
 
       const pdfBtn = document.getElementById('pdf-btn');
       pdfBtn.textContent = '⏳ กำลังสร้าง...';
@@ -2174,6 +2212,56 @@
       document.getElementById('year').addEventListener('change', renderTopicChips);
     });
   </script>
+
+  <!-- UPGRADE MODAL -->
+  <div id="upgrade-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:white;border-radius:24px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+
+      <div style="background:linear-gradient(135deg,#7C2D12,#C2410C,#F97316,#FBBF24);padding:28px 24px 24px;text-align:center;color:white;">
+        <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <svg viewBox="0 0 100 100" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="20,50 36,37 36,63" fill="white"/>
+            <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+            <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.7)"/>
+            <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
+            <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
+          </svg>
+        </div>
+        <div style="font-size:1.4rem;font-weight:800;">แม่ปลา Premium</div>
+        <div style="font-size:0.82rem;opacity:0.85;margin-top:4px;">Unlock PDF Downloads</div>
+      </div>
+
+      <div style="padding:24px;">
+        <div style="font-size:0.95rem;color:#1C0A00;margin-bottom:16px;line-height:1.7;text-align:center;">
+          บันทึกและพิมพ์คำอธิบายการบ้านของลูก<br>
+          <span style="font-size:0.85rem;color:#92400E;">Save &amp; print any homework explanation as a beautiful PDF</span>
+        </div>
+
+        <div style="background:#FFF7ED;border-radius:14px;padding:14px 16px;margin-bottom:20px;">
+          <div style="font-size:0.88rem;color:#1C0A00;line-height:2;">
+            ✅ &nbsp;Unlimited PDF downloads<br>
+            ✅ &nbsp;Premium branded design<br>
+            ✅ &nbsp;All subjects &amp; year groups<br>
+            ✅ &nbsp;Cancel anytime
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-bottom:20px;">
+          <span style="font-size:2rem;font-weight:800;color:#C2410C;">฿99</span>
+          <span style="font-size:0.9rem;color:#92400E;font-weight:600;">/month</span>
+          <div style="font-size:0.75rem;color:#C4A882;margin-top:4px;">30 days access · auto-renews monthly</div>
+        </div>
+
+        <button onclick="goToStripe()" style="width:100%;padding:15px;background:linear-gradient(135deg,#F97316,#FBBF24);color:white;border:none;border-radius:14px;font-size:1.05rem;font-weight:800;cursor:pointer;font-family:'Sarabun',sans-serif;margin-bottom:10px;">
+          ชำระเงิน ฿99 / Pay Now
+        </button>
+        <button onclick="closeUpgradeModal()" style="width:100%;padding:12px;background:transparent;color:#9A7040;border:1.5px solid #FED7AA;border-radius:14px;font-size:0.9rem;cursor:pointer;font-family:'Sarabun',sans-serif;">
+          ไม่ใช่ตอนนี้ / Not now
+        </button>
+      </div>
+
+    </div>
+  </div>
 
 </body>
 </html>
