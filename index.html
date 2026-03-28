@@ -14,6 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -1378,6 +1379,7 @@
 
     async function generate() {
       if (appMode === 'weekly') { generateWeekly(); return; }
+      if (!hasAccess() && !hasFreeUses()) { showUpgradeModal(); return; }
 
       const subject = document.getElementById('subject').value;
       const year    = document.getElementById('year').value;
@@ -1483,6 +1485,9 @@
         shortBtn.dataset.mode = '';
         document.getElementById('output-mode').style.display = 'none';
         fullLengthText = '';
+
+        // Count free use
+        if (!hasAccess()) incrementFreeUses();
 
         // Save to history
         if (generatedText) {
@@ -1931,43 +1936,108 @@
       win.document.close();
     }
 
-    const STRIPE_MONTHLY = 'https://buy.stripe.com/test_9B68wP1jxbLd0108zW77O00';
-    const ACCESS_KEY     = 'maepla_access_expiry';
-    const ACCESS_DAYS    = 30;
+    const ACCESS_KEY   = 'maepla_access_expiry';
+    const FREE_KEY     = 'maepla_free_uses';
+    const FREE_LIMIT   = 3;
+    const ACCESS_DAYS  = 30;
+    const PROMPTPAY_NO = '0642803649';
+    const LINE_OA_URL  = 'https://line.me/R/ti/p/@899jicdr';
+    const PRICE        = 199;
 
-    function checkSubscriptionRedirect() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('subscribed') === '1') {
-        const expiry = Date.now() + ACCESS_DAYS * 24 * 60 * 60 * 1000;
-        localStorage.setItem(ACCESS_KEY, expiry);
-        window.history.replaceState({}, '', window.location.pathname);
+    // ── PromptPay QR payload (EMVCo standard) ──
+    function tlv(tag, val) { return tag + String(val.length).padStart(2,'0') + val; }
+    function crc16(str) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+        }
       }
+      return crc;
+    }
+    function promptPayPayload(phone) {
+      let p = phone.replace(/\D/g,'');
+      if (p.startsWith('0')) p = '66' + p.slice(1);
+      p = p.padStart(13,'0');
+      const acct = tlv('00','A000000677010111') + tlv('01', p);
+      let payload = tlv('00','01') + tlv('01','11') + tlv('29', acct)
+        + tlv('53','764') + tlv('54', String(PRICE))
+        + tlv('58','TH') + tlv('59','Mae Pla') + tlv('60','Bangkok') + '6304';
+      return payload + crc16(payload).toString(16).toUpperCase().padStart(4,'0');
     }
 
-    function hasPdfAccess() {
+    // ── Access helpers ──
+    function hasAccess() {
       const expiry = localStorage.getItem(ACCESS_KEY);
       return expiry && Date.now() < parseInt(expiry);
     }
+    function getFreeUses() { return parseInt(localStorage.getItem(FREE_KEY) || '0'); }
+    function incrementFreeUses() { localStorage.setItem(FREE_KEY, getFreeUses() + 1); }
+    function hasFreeUses() { return getFreeUses() < FREE_LIMIT; }
 
+    // ── Modal ──
+    let _qrRendered = false;
     function showUpgradeModal() {
       document.getElementById('upgrade-modal').style.display = 'flex';
+      document.getElementById('code-error').style.display = 'none';
+      document.getElementById('access-code-input').value = '';
+      if (!_qrRendered) {
+        new QRCode(document.getElementById('pp-qr'), {
+          text: promptPayPayload(PROMPTPAY_NO),
+          width: 200, height: 200,
+          colorDark: '#1C0A00', colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        _qrRendered = true;
+      }
     }
-
     function closeUpgradeModal() {
       document.getElementById('upgrade-modal').style.display = 'none';
     }
-
-    function goToStripe() {
-      window.open(STRIPE_MONTHLY, '_blank');
-      closeUpgradeModal();
+    function openLineForCode() {
+      window.open(LINE_OA_URL, '_blank');
     }
-
-    checkSubscriptionRedirect();
+    async function verifyCode() {
+      const code = document.getElementById('access-code-input').value.trim();
+      if (!code) return;
+      const btn = document.getElementById('verify-btn');
+      btn.textContent = '⏳';
+      btn.disabled = true;
+      try {
+        const resp = await fetch('/api/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+        const data = await resp.json();
+        if (data.valid) {
+          localStorage.setItem(ACCESS_KEY, Date.now() + ACCESS_DAYS * 86400000);
+          closeUpgradeModal();
+          showToast('✅ ปลดล็อคแล้ว! ใช้งาน PDF ได้เลยค่ะ');
+          generatePdf();
+        } else {
+          document.getElementById('code-error').style.display = 'block';
+          btn.textContent = 'ยืนยัน / Confirm';
+          btn.disabled = false;
+        }
+      } catch {
+        btn.textContent = 'ยืนยัน / Confirm';
+        btn.disabled = false;
+      }
+    }
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1C0A00;color:white;padding:12px 22px;border-radius:20px;font-size:0.88rem;font-weight:600;z-index:3000;font-family:Sarabun,sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
 
     async function generatePdf() {
       if (!generatedText) return;
 
-      if (!hasPdfAccess()) {
+      if (!hasAccess()) {
         showUpgradeModal();
         return;
       }
@@ -2214,12 +2284,13 @@
   </script>
 
   <!-- UPGRADE MODAL -->
-  <div id="upgrade-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;">
-    <div style="background:white;border-radius:24px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+  <div id="upgrade-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;align-items:center;justify-content:center;padding:16px;overflow-y:auto;">
+    <div style="background:white;border-radius:24px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);margin:auto;">
 
-      <div style="background:linear-gradient(135deg,#7C2D12,#C2410C,#F97316,#FBBF24);padding:28px 24px 24px;text-align:center;color:white;">
-        <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-          <svg viewBox="0 0 100 100" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#7C2D12,#C2410C,#F97316,#FBBF24);padding:22px 24px 18px;text-align:center;color:white;">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+          <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
             <polygon points="20,50 36,37 36,63" fill="white"/>
             <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
             <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.7)"/>
@@ -2227,39 +2298,59 @@
             <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
           </svg>
         </div>
-        <div style="font-size:1.4rem;font-weight:800;">แม่ปลา Premium</div>
-        <div style="font-size:0.82rem;opacity:0.85;margin-top:4px;">Unlock PDF Downloads</div>
+        <div style="font-size:1.3rem;font-weight:800;">แม่ปลา Premium</div>
+        <div style="font-size:0.78rem;opacity:0.85;margin-top:3px;">฿199/เดือน · ใช้ได้ 30 วัน</div>
       </div>
 
-      <div style="padding:24px;">
-        <div style="font-size:0.95rem;color:#1C0A00;margin-bottom:16px;line-height:1.7;text-align:center;">
-          บันทึกและพิมพ์คำอธิบายการบ้านของลูก<br>
-          <span style="font-size:0.85rem;color:#92400E;">Save &amp; print any homework explanation as a beautiful PDF</span>
+      <div style="padding:20px;">
+
+        <!-- What you get -->
+        <div style="background:#FFF7ED;border-radius:12px;padding:12px 14px;margin-bottom:18px;font-size:0.85rem;color:#1C0A00;line-height:1.9;">
+          ✅ &nbsp;คำถามไม่จำกัด / Unlimited explanations<br>
+          ✅ &nbsp;PDF ดาวน์โหลดได้ไม่จำกัด<br>
+          ✅ &nbsp;ทุกวิชา ทุกชั้นปี
         </div>
 
-        <div style="background:#FFF7ED;border-radius:14px;padding:14px 16px;margin-bottom:20px;">
-          <div style="font-size:0.88rem;color:#1C0A00;line-height:2;">
-            ✅ &nbsp;Unlimited PDF downloads<br>
-            ✅ &nbsp;Premium branded design<br>
-            ✅ &nbsp;All subjects &amp; year groups<br>
-            ✅ &nbsp;Cancel anytime
+        <!-- Step 1: Pay -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">ขั้นตอนที่ 1 — โอนเงิน ฿199 ผ่าน PromptPay</div>
+          <div style="display:flex;gap:14px;align-items:center;">
+            <div id="pp-qr" style="flex-shrink:0;border:2px solid #FED7AA;border-radius:12px;padding:6px;background:white;"></div>
+            <div>
+              <div style="font-size:1.1rem;font-weight:800;color:#C2410C;">฿199</div>
+              <div style="font-size:0.82rem;color:#1C0A00;font-weight:700;margin-top:4px;">064-280-3649</div>
+              <div style="font-size:0.72rem;color:#9A7040;margin-top:2px;">PromptPay · Mae Pla</div>
+            </div>
           </div>
         </div>
 
-        <div style="text-align:center;margin-bottom:20px;">
-          <span style="font-size:2rem;font-weight:800;color:#C2410C;">฿99</span>
-          <span style="font-size:0.9rem;color:#92400E;font-weight:600;">/month</span>
-          <div style="font-size:0.75rem;color:#C4A882;margin-top:4px;">30 days access · auto-renews monthly</div>
+        <!-- Step 2: Message LINE -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">ขั้นตอนที่ 2 — แจ้งโอนใน LINE เพื่อรับรหัส</div>
+          <button onclick="openLineForCode()" style="width:100%;padding:11px;background:#06C755;color:white;border:none;border-radius:12px;font-size:0.92rem;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;">
+            💬 แจ้งชำระเงินใน LINE
+          </button>
         </div>
 
-        <button onclick="goToStripe()" style="width:100%;padding:15px;background:linear-gradient(135deg,#F97316,#FBBF24);color:white;border:none;border-radius:14px;font-size:1.05rem;font-weight:800;cursor:pointer;font-family:'Sarabun',sans-serif;margin-bottom:10px;">
-          ชำระเงิน ฿99 / Pay Now
-        </button>
-        <button onclick="closeUpgradeModal()" style="width:100%;padding:12px;background:transparent;color:#9A7040;border:1.5px solid #FED7AA;border-radius:14px;font-size:0.9rem;cursor:pointer;font-family:'Sarabun',sans-serif;">
+        <!-- Step 3: Enter code -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">ขั้นตอนที่ 3 — กรอกรหัสที่ได้รับ</div>
+          <div style="display:flex;gap:8px;">
+            <input id="access-code-input" type="text" placeholder="รหัส 8 ตัว / Access code"
+              style="flex:1;padding:11px 14px;border:1.5px solid #FED7AA;border-radius:12px;font-size:0.9rem;font-family:'Sarabun',sans-serif;outline:none;color:#1C0A00;">
+            <button id="verify-btn" onclick="verifyCode()"
+              style="padding:11px 16px;background:linear-gradient(135deg,#F97316,#FBBF24);color:white;border:none;border-radius:12px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;white-space:nowrap;">
+              ยืนยัน
+            </button>
+          </div>
+          <div id="code-error" style="display:none;font-size:0.78rem;color:#DC2626;margin-top:6px;">รหัสไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง / Invalid code — please check and try again</div>
+        </div>
+
+        <button onclick="closeUpgradeModal()" style="width:100%;padding:10px;background:transparent;color:#9A7040;border:1.5px solid #FED7AA;border-radius:12px;font-size:0.85rem;cursor:pointer;font-family:'Sarabun',sans-serif;">
           ไม่ใช่ตอนนี้ / Not now
         </button>
-      </div>
 
+      </div>
     </div>
   </div>
 
