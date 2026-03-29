@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F97316">
+  <title>แม่ปลา · Mae Pla — ช่วยผู้ปกครองเข้าใจการบ้านของลูก</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #FFF8F0;
+      color: #2C1810;
+      overflow-x: hidden;
+    }
+
+    /* ── LANG TOGGLE ── */
+    .lang-bar {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      display: flex;
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+      overflow: hidden;
+      border: 1.5px solid #FED7AA;
+    }
+    .lang-btn {
+      padding: 7px 16px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: #9A3412;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, #F97316, #FBBF24);
+      color: white;
+      border-radius: 18px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(150deg, #7C2D12 0%, #C2410C 25%, #F97316 60%, #FBBF24 100%);
+      padding: 80px 20px 70px;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .hero-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hero-ring-1 { width: 600px; height: 600px; top: -300px; right: -200px; }
+    .hero-ring-2 { width: 400px; height: 400px; bottom: -200px; left: -150px; }
+
+    .fish-ring {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      animation: fishFloat 3s ease-in-out infinite;
+    }
+    @keyframes fishFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .hero-brand {
+      font-size: 1rem;
+      font-weight: 700;
+      opacity: 0.9;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: clamp(1.7rem, 5vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      position: relative;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .hero p {
+      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+      opacity: 0.92;
+      max-width: 480px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+      font-weight: 400;
+      position: relative;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: white;
+      color: #C2410C;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 16px 36px;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+    .hero-free-note {
+      margin-top: 14px;
+      font-size: 0.82rem;
+      opacity: 0.78;
+      position: relative;
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 60px 20px; }
+    .section-inner { max-width: 600px; margin: 0 auto; }
+    .section-label {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #F97316;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      font-weight: 800;
+      color: #2C1810;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .section-sub {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #78350F;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* ── FREE BADGE ── */
+    .free-banner {
+      background: linear-gradient(135deg, #FFF7ED, #FEF3C7);
+      border: 2px solid #FED7AA;
+      border-radius: 18px;
+      padding: 20px 24px;
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    .free-banner-num {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #F97316;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .free-banner-label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #C2410C;
+      margin-bottom: 6px;
+    }
+    .free-banner-sub {
+      font-size: 0.85rem;
+      color: #92400E;
+    }
+
+    /* ── STEPS ── */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      position: relative;
+      padding-bottom: 32px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .step-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #F97316, #FBBF24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 4px 16px rgba(249,115,22,0.3);
+      flex-shrink: 0;
+    }
+    .step-line {
+      width: 2px;
+      flex: 1;
+      min-height: 32px;
+      background: linear-gradient(to bottom, #FBBF24, #FEF3C7);
+      margin-top: 8px;
+    }
+    .step:last-child .step-line { display: none; }
+    .step-body { padding-top: 10px; }
+    .step-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #F97316;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #2C1810;
+      margin-bottom: 5px;
+    }
+    .step-desc {
+      font-size: 0.9rem;
+      color: #78350F;
+      line-height: 1.6;
+    }
+
+    /* ── FEATURES ── */
+    .features-bg { background: white; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .feature-card {
+      background: #FFF8F0;
+      border: 1.5px solid #FED7AA;
+      border-radius: 16px;
+      padding: 18px 14px;
+      text-align: center;
+    }
+    .feature-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .feature-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #2C1810;
+      margin-bottom: 4px;
+    }
+    .feature-desc {
+      font-size: 0.78rem;
+      color: #92400E;
+      line-height: 1.5;
+    }
+
+    /* ── PRICING ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 400px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+    .pricing-card {
+      border-radius: 20px;
+      padding: 24px 18px;
+      border: 2px solid #FED7AA;
+      background: white;
+    }
+    .pricing-card.premium {
+      background: linear-gradient(145deg, #7C2D12, #C2410C, #F97316);
+      border-color: transparent;
+      color: white;
+    }
+    .pricing-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: #FEF3C7;
+      color: #C2410C;
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 12px;
+    }
+    .pricing-card.premium .pricing-badge {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    .pricing-price {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #2C1810;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .pricing-card.premium .pricing-price { color: white; }
+    .pricing-period {
+      font-size: 0.8rem;
+      color: #92400E;
+      margin-bottom: 18px;
+    }
+    .pricing-card.premium .pricing-period { color: rgba(255,255,255,0.75); }
+    .pricing-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .pricing-list li {
+      font-size: 0.85rem;
+      color: #2C1810;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pricing-card.premium .pricing-list li { color: rgba(255,255,255,0.92); }
+    .pricing-list li::before {
+      content: '✓';
+      color: #F97316;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .pricing-card.premium .pricing-list li::before { color: #FBBF24; }
+
+    /* ── FINAL CTA ── */
+    .cta-section {
+      background: linear-gradient(150deg, #7C2D12 0%, #C2410C 40%, #F97316 80%, #FBBF24 100%);
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    .cta-title {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+      position: relative;
+      line-height: 1.3;
+    }
+    .cta-sub {
+      font-size: 0.95rem;
+      opacity: 0.88;
+      margin-bottom: 28px;
+      position: relative;
+      line-height: 1.6;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: white;
+      color: #C2410C;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 16px 40px;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .cta-btn:hover { transform: translateY(-2px); }
+    .cta-note {
+      margin-top: 14px;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      position: relative;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #1C0A00;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 0.82rem;
+    }
+    footer a {
+      color: #FBBF24;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer-line { margin: 6px 0; }
+
+    /* ── FADE IN ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Language Toggle -->
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('th', this)" id="btn-th">🇹🇭 ไทย</button>
+    <button class="lang-btn" onclick="setLang('en', this)" id="btn-en">🇬🇧 EN</button>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-ring hero-ring-1"></div>
+    <div class="hero-ring hero-ring-2"></div>
+
+    <div class="fish-ring">
+      <svg width="58" height="58" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="20,50 36,37 36,63" fill="white"/>
+        <ellipse cx="57" cy="50" rx="26" ry="17" fill="white"/>
+        <ellipse cx="56" cy="57" rx="18" ry="8" fill="rgba(251,191,36,0.75)"/>
+        <path d="M44 34 Q54 24 66 32" stroke="rgba(251,191,36,0.9)" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <circle cx="73" cy="45" r="3.5" fill="#7C2D12"/>
+        <circle cx="74.5" cy="43.5" r="1.5" fill="white"/>
+        <path d="M79 53 Q82 57 79 61" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="hero-brand">แม่ปลา · Mae Pla</div>
+    <h1 id="hero-h1">ผู้ปกครองยุคใหม่<br>เข้าใจการบ้านลูกได้<br>ในไม่กี่วินาที</h1>
+    <p id="hero-p">แม่ปลาอธิบายการบ้านจากโรงเรียนนานาชาติ ด้วยภาษาไทยที่เข้าใจง่าย ไม่ต้องเป็นผู้เชี่ยวชาญ ไม่ต้องสมัครสมาชิก</p>
+    <a href="/app" class="hero-cta" id="hero-cta">ลองใช้ฟรี 3 ครั้ง →</a>
+    <div class="hero-free-note" id="hero-free-note">ฟรีทันที · ไม่ต้องใส่บัตรเครดิต</div>
+  </section>
+
+  <!-- FREE USES -->
+  <section style="padding: 50px 20px 0;">
+    <div class="section-inner fade-in">
+      <div class="free-banner">
+        <div class="free-banner-num">3</div>
+        <div class="free-banner-label" id="free-label">ครั้งฟรี ไม่ต้องสมัครสมาชิก</div>
+        <div class="free-banner-sub" id="free-sub">เปิดแอปแล้วใช้งานได้เลย ไม่มีการเก็บข้อมูลส่วนตัว ไม่ต้องล็อกอิน หลังจาก 3 ครั้ง อัปเกรดเป็น Premium ฿199/เดือน เพื่อใช้งานไม่จำกัด</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <div class="section-inner">
+      <div class="fade-in">
+        <div class="section-label" id="steps-label">วิธีใช้งาน</div>
+        <div class="section-title" id="steps-title">ง่ายมาก แค่ 3 ขั้นตอน</div>
+        <div class="section-sub" id="steps-sub">ไม่ต้องมีความรู้พิเศษ ผู้ปกครองทุกท่านใช้ได้</div>
+      </div>
+      <div class="steps">
+        <div class="step fade-in">
+          <div class="step-left">
+            <div class="step-icon">📷</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-num" id="step1-num">ขั้นตอนที่ 1</div>
+            <div class="step-title" id="step1-title">ถ่ายรูปใบงาน หรือพิมพ์หัวข้อ</div>
+            <div class="step-desc" id="step1-desc">ถ่ายรูปการบ้านของลูกได้สูงสุด 3 รูป หรือพิมพ์หัวข้อที่ต้องการ เลือกวิชาและชั้นปี แค่นั้นพอ</div>
+          </div>
+        </div>
+        <div class="step fade-in">
+          <div class="step-left">
+            <div class="step-icon">✨</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-num" id="step2-num">ขั้นตอนที่ 2</div>
+            <div class="step-title" id="step2-title">แม่ปลาอธิบายให้ในภาษาที่เข้าใจ</div>
+            <div class="step-desc" id="step2-desc">แม่ปลาจะอธิบายเนื้อหาด้วยภาษาที่อ่านง่าย ครบถ้วน พร้อมตัวอย่างที่ลูกนำไปใช้ในชีวิตจริงได้</div>
+          </div>
+        </div>
+        <div class="step fade-in">
+          <div class="step-left">
+            <div class="step-icon">📤</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-num" id="step3-num">ขั้นตอนที่ 3</div>
+            <div class="step-title" id="step3-title">แชร์ไปกลุ่ม LINE ได้ทันที</div>
+            <div class="step-desc" id="step3-desc">คัดลอกโพสต์ส่งกลุ่ม LINE ครอบครัว หรือดาวน์โหลด PDF สวยงาม (สำหรับ Premium) เก็บไว้อ่านได้ทุกเมื่อ</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-bg">
+    <div class="section-inner">
+      <div class="fade-in">
+        <div class="section-label" id="feat-label">ฟีเจอร์</div>
+        <div class="section-title" id="feat-title">ครบทุกอย่างที่ผู้ปกครองต้องการ</div>
+        <div class="section-sub" id="feat-sub">รองรับทั้งหลักสูตร Oxford และ Cambridge</div>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📚</div>
+          <div class="feature-title" id="f1-title">ทุกวิชา ป.1–ป.6</div>
+          <div class="feature-desc" id="f1-desc">คณิต · วิทย์ · อังกฤษ · ไทย · สังคม</div>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🌏</div>
+          <div class="feature-title" id="f2-title">เลือกภาษาได้</div>
+          <div class="feature-desc" id="f2-desc">ไทย · อังกฤษ · สองภาษา · แปลพร้อมอธิบาย</div>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📷</div>
+          <div class="feature-title" id="f3-title">อัปโหลดรูปได้</div>
+          <div class="feature-desc" id="f3-desc">ถ่ายรูปใบงาน แม่ปลาจะอ่านและอธิบายให้ได้เลย</div>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📅</div>
+          <div class="feature-title" id="f4-title">สรุปรายสัปดาห์</div>
+          <div class="feature-desc" id="f4-desc">สร้างโพสต์สรุปการเรียนทั้งสัปดาห์ในคลิกเดียว</div>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🎓</div>
+          <div class="feature-title" id="f5-title">Oxford & Cambridge</div>
+          <div class="feature-desc" id="f5-desc">อธิบายตรงตามหลักสูตรโรงเรียนนานาชาติในไทย</div>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📄</div>
+          <div class="feature-title" id="f6-title">PDF สวยงาม</div>
+          <div class="feature-desc" id="f6-desc">ดาวน์โหลด PDF พร้อมโลโก้ เก็บไว้แชร์ได้ (Premium)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section>
+    <div class="section-inner">
+      <div class="fade-in">
+        <div class="section-label" id="price-label">ราคา</div>
+        <div class="section-title" id="price-title">เริ่มต้นฟรี อัปเกรดเมื่อพร้อม</div>
+        <div class="section-sub" id="price-sub">ไม่มีสัญญาผูกมัด ยกเลิกได้ทุกเมื่อ</div>
+      </div>
+      <div class="pricing-grid fade-in">
+        <div class="pricing-card">
+          <div class="pricing-badge" id="badge-free">ฟรี</div>
+          <div class="pricing-price">฿0</div>
+          <div class="pricing-period" id="period-free">ไม่มีกำหนด</div>
+          <ul class="pricing-list">
+            <li id="pl1">อธิบายการบ้าน 3 ครั้ง</li>
+            <li id="pl2">ทุกวิชา ทุกชั้นปี</li>
+            <li id="pl3">คัดลอกโพสต์ LINE</li>
+            <li id="pl4">อัปโหลดรูปใบงาน</li>
+          </ul>
+        </div>
+        <div class="pricing-card premium">
+          <div class="pricing-badge" id="badge-premium">Premium</div>
+          <div class="pricing-price">฿199</div>
+          <div class="pricing-period" id="period-premium">ต่อเดือน</div>
+          <ul class="pricing-list">
+            <li id="pp1">ใช้งานไม่จำกัดครั้ง</li>
+            <li id="pp2">ดาวน์โหลด PDF สวยงาม</li>
+            <li id="pp3">ทุกฟีเจอร์ของแพลนฟรี</li>
+            <li id="pp4">สนับสนุนทีมพัฒนา</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="cta-section">
+    <div class="section-inner" style="position:relative;">
+      <div class="cta-title" id="cta-title">พร้อมลองแล้วใช่ไหมคะ?</div>
+      <div class="cta-sub" id="cta-sub">เริ่มใช้งานฟรีได้เลย 3 ครั้งแรก ไม่ต้องสมัครสมาชิก ไม่ต้องใส่ข้อมูลใดๆ</div>
+      <a href="/app" class="cta-btn" id="cta-btn">เปิดแม่ปลา →</a>
+      <div class="cta-note" id="cta-note">ใช้งานได้บนมือถือและแท็บเล็ต · รองรับ LINE</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-line">
+      <strong style="color:white;">แม่ปลา · Mae Pla</strong> — Homework Helper for Parents
+    </div>
+    <div class="footer-line">
+      <a href="https://line.me/R/ti/p/@899jicdr">เพิ่มเพื่อนใน LINE →</a>
+    </div>
+    <div class="footer-line" style="margin-top:12px;font-size:0.75rem;">
+      © 2026 Mae Pla · สงวนลิขสิทธิ์
+    </div>
+  </footer>
+
+  <script>
+    // ── TRANSLATIONS ──
+    const T = {
+      th: {
+        'hero-h1':      'ผู้ปกครองยุคใหม่<br>เข้าใจการบ้านลูกได้<br>ในไม่กี่วินาที',
+        'hero-p':       'แม่ปลาอธิบายการบ้านจากโรงเรียนนานาชาติ ด้วยภาษาไทยที่เข้าใจง่าย ไม่ต้องเป็นผู้เชี่ยวชาญ ไม่ต้องสมัครสมาชิก',
+        'hero-cta':     'ลองใช้ฟรี 3 ครั้ง →',
+        'hero-free-note': 'ฟรีทันที · ไม่ต้องใส่บัตรเครดิต',
+        'free-label':   'ครั้งฟรี ไม่ต้องสมัครสมาชิก',
+        'free-sub':     'เปิดแอปแล้วใช้งานได้เลย ไม่มีการเก็บข้อมูลส่วนตัว ไม่ต้องล็อกอิน หลังจาก 3 ครั้ง อัปเกรดเป็น Premium ฿199/เดือน เพื่อใช้งานไม่จำกัด',
+        'steps-label':  'วิธีใช้งาน',
+        'steps-title':  'ง่ายมาก แค่ 3 ขั้นตอน',
+        'steps-sub':    'ไม่ต้องมีความรู้พิเศษ ผู้ปกครองทุกท่านใช้ได้',
+        'step1-num':    'ขั้นตอนที่ 1',
+        'step1-title':  'ถ่ายรูปใบงาน หรือพิมพ์หัวข้อ',
+        'step1-desc':   'ถ่ายรูปการบ้านของลูกได้สูงสุด 3 รูป หรือพิมพ์หัวข้อที่ต้องการ เลือกวิชาและชั้นปี แค่นั้นพอ',
+        'step2-num':    'ขั้นตอนที่ 2',
+        'step2-title':  'แม่ปลาอธิบายให้ในภาษาที่เข้าใจ',
+        'step2-desc':   'แม่ปลาจะอธิบายเนื้อหาด้วยภาษาที่อ่านง่าย ครบถ้วน พร้อมตัวอย่างที่ลูกนำไปใช้ในชีวิตจริงได้',
+        'step3-num':    'ขั้นตอนที่ 3',
+        'step3-title':  'แชร์ไปกลุ่ม LINE ได้ทันที',
+        'step3-desc':   'คัดลอกโพสต์ส่งกลุ่ม LINE ครอบครัว หรือดาวน์โหลด PDF สวยงาม (สำหรับ Premium) เก็บไว้อ่านได้ทุกเมื่อ',
+        'feat-label':   'ฟีเจอร์',
+        'feat-title':   'ครบทุกอย่างที่ผู้ปกครองต้องการ',
+        'feat-sub':     'รองรับทั้งหลักสูตร Oxford และ Cambridge',
+        'f1-title': 'ทุกวิชา ป.1–ป.6', 'f1-desc': 'คณิต · วิทย์ · อังกฤษ · ไทย · สังคม',
+        'f2-title': 'เลือกภาษาได้', 'f2-desc': 'ไทย · อังกฤษ · สองภาษา · แปลพร้อมอธิบาย',
+        'f3-title': 'อัปโหลดรูปได้', 'f3-desc': 'ถ่ายรูปใบงาน แม่ปลาจะอ่านและอธิบายให้ได้เลย',
+        'f4-title': 'สรุปรายสัปดาห์', 'f4-desc': 'สร้างโพสต์สรุปการเรียนทั้งสัปดาห์ในคลิกเดียว',
+        'f5-title': 'Oxford & Cambridge', 'f5-desc': 'อธิบายตรงตามหลักสูตรโรงเรียนนานาชาติในไทย',
+        'f6-title': 'PDF สวยงาม', 'f6-desc': 'ดาวน์โหลด PDF พร้อมโลโก้ เก็บไว้แชร์ได้ (Premium)',
+        'price-label':  'ราคา',
+        'price-title':  'เริ่มต้นฟรี อัปเกรดเมื่อพร้อม',
+        'price-sub':    'ไม่มีสัญญาผูกมัด ยกเลิกได้ทุกเมื่อ',
+        'badge-free':   'ฟรี',
+        'period-free':  'ไม่มีกำหนด',
+        'badge-premium':'Premium',
+        'period-premium':'ต่อเดือน',
+        'pl1': 'อธิบายการบ้าน 3 ครั้ง', 'pl2': 'ทุกวิชา ทุกชั้นปี',
+        'pl3': 'คัดลอกโพสต์ LINE', 'pl4': 'อัปโหลดรูปใบงาน',
+        'pp1': 'ใช้งานไม่จำกัดครั้ง', 'pp2': 'ดาวน์โหลด PDF สวยงาม',
+        'pp3': 'ทุกฟีเจอร์ของแพลนฟรี', 'pp4': 'สนับสนุนทีมพัฒนา',
+        'cta-title':    'พร้อมลองแล้วใช่ไหมคะ?',
+        'cta-sub':      'เริ่มใช้งานฟรีได้เลย 3 ครั้งแรก ไม่ต้องสมัครสมาชิก ไม่ต้องใส่ข้อมูลใดๆ',
+        'cta-btn':      'เปิดแม่ปลา →',
+        'cta-note':     'ใช้งานได้บนมือถือและแท็บเล็ต · รองรับ LINE',
+      },
+      en: {
+        'hero-h1':      'Understand your child\'s<br>international school homework<br>in seconds',
+        'hero-p':       'Mae Pla explains English homework in clear, friendly language — no expertise needed, no sign-up required.',
+        'hero-cta':     'Try free — 3 explanations →',
+        'hero-free-note': 'Free instantly · No credit card needed',
+        'free-label':   'free explanations — no account needed',
+        'free-sub':     'Open the app and start immediately. No personal data collected, no login required. After 3 uses, upgrade to Premium at ฿199/month for unlimited access.',
+        'steps-label':  'How it works',
+        'steps-title':  'Just 3 simple steps',
+        'steps-sub':    'No expertise needed — any parent can use it',
+        'step1-num':    'Step 1',
+        'step1-title':  'Photo the worksheet or type the topic',
+        'step1-desc':   'Upload up to 3 photos of your child\'s homework, or simply type the topic. Select the subject and year group — that\'s all.',
+        'step2-num':    'Step 2',
+        'step2-title':  'Mae Pla explains it in plain language',
+        'step2-desc':   'Mae Pla explains the topic clearly and warmly, with real-life examples your child can relate to.',
+        'step3-num':    'Step 3',
+        'step3-title':  'Share instantly to your LINE group',
+        'step3-desc':   'Copy the post and share it to your family LINE group, or download a beautiful PDF (Premium) to keep and share anytime.',
+        'feat-label':   'Features',
+        'feat-title':   'Everything parents need',
+        'feat-sub':     'Supports both Oxford and Cambridge curricula',
+        'f1-title': 'All subjects, Years 1–6', 'f1-desc': 'Maths · Science · English · Thai · Social Studies',
+        'f2-title': 'Choose your language', 'f2-desc': 'Thai · English · Bilingual · Translated with explanation',
+        'f3-title': 'Upload worksheet photos', 'f3-desc': 'Take a photo of the homework and Mae Pla will read and explain it for you',
+        'f4-title': 'Weekly summary', 'f4-desc': 'Generate a full week\'s learning summary post in one click',
+        'f5-title': 'Oxford & Cambridge', 'f5-desc': 'Explanations follow the exact curriculum used at international schools in Thailand',
+        'f6-title': 'Beautiful PDF', 'f6-desc': 'Download a branded PDF to keep and share (Premium)',
+        'price-label':  'Pricing',
+        'price-title':  'Start free, upgrade when ready',
+        'price-sub':    'No contracts, cancel anytime',
+        'badge-free':   'Free',
+        'period-free':  'forever',
+        'badge-premium':'Premium',
+        'period-premium':'per month',
+        'pl1': '3 homework explanations', 'pl2': 'All subjects, all year groups',
+        'pl3': 'Copy post to LINE', 'pl4': 'Upload worksheet photos',
+        'pp1': 'Unlimited explanations', 'pp2': 'Download beautiful PDFs',
+        'pp3': 'Everything in Free', 'pp4': 'Support the team',
+        'cta-title':    'Ready to try it?',
+        'cta-sub':      'Start free right now — 3 explanations, no sign-up, no data collected.',
+        'cta-btn':      'Open Mae Pla →',
+        'cta-note':     'Works on mobile and tablet · Supports LINE',
+      }
+    };
+
+    let currentLang = 'th';
+
+    function setLang(lang, btn) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const t = T[lang];
+      for (const [id, val] of Object.entries(t)) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = val;
+      }
+    }
+
+    // ── FADE IN ON SCROLL ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
