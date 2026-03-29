@@ -63,6 +63,23 @@
       font-weight: 400;
     }
 
+    .upgrade-header-btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 7px 18px;
+      background: rgba(255,255,255,0.2);
+      border: 1.5px solid rgba(255,255,255,0.5);
+      border-radius: 20px;
+      color: white;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .upgrade-header-btn:hover { background: rgba(255,255,255,0.3); }
+    .upgrade-header-btn.hidden { display: none; }
+
     /* ── CONTENT ── */
     .content {
       max-width: 520px;
@@ -726,6 +743,7 @@
     </div>
     <h1 id="app-name">แม่ปลา</h1>
     <p id="header-sub">เข้าใจการบ้านของลูก · Understand Your Child's Homework</p>
+    <button class="upgrade-header-btn" id="upgrade-header-btn" onclick="showUpgradeModal()">⭐ อัปเกรด Premium · ฿199/เดือน</button>
   </header>
 
   <main class="content">
@@ -2280,6 +2298,10 @@
 
       document.getElementById('subject').addEventListener('change', renderTopicChips);
       document.getElementById('year').addEventListener('change', renderTopicChips);
+
+      if (hasAccess()) {
+        document.getElementById('upgrade-header-btn').classList.add('hidden');
+      }
     });
   </script>
 
